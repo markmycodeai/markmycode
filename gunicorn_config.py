@@ -2,8 +2,11 @@
 import os
 import multiprocessing
 
-# Server socket
-bind = f"0.0.0.0:{os.getenv('PORT', 5000)}"
+# Get port from environment variable
+port = os.getenv('PORT', 5000)
+
+# Server socket - Render requires binding to 0.0.0.0:$PORT
+bind = f"0.0.0.0:{port}"
 backlog = 2048
 
 # Worker processes
@@ -28,14 +31,3 @@ pidfile = None
 umask = 0
 user = None
 group = None
-
-# SSL (if needed, configure separately)
-# keyfile = None
-# certfile = None
-# ssl_version = None
-# cert_reqs = 0
-# ca_certs = None
-# ciphers = None
-
-# Application
-raw_env = []
