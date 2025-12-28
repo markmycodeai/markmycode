@@ -207,16 +207,61 @@ const UI = {
             return;
         }
 
+        // 1. Show Loading Screen
+        const loginForm = document.getElementById('loginForm');
+        const loaderScreen = document.getElementById('loaderScreen');
+        const loadingText = document.getElementById('loadingText');
+
+        loginForm.classList.add('hidden');
+        loaderScreen.classList.remove('hidden');
+
+        // 2. Tech Phrases Cycling
+        const phrases = [
+            "Initializing Neural Networks...",
+            "Connecting to Render Cloud...",
+            "Warming up LLM Cores...",
+            "Optimizing Algorithm Engines...",
+            "Establishing Secure Uplink...",
+            "Loading Competitive Modules...",
+            "Decrypting Secure Handshake...",
+            "Allocating Virtual Resources..."
+        ];
+
+        let phraseIndex = 0;
+        loadingText.textContent = phrases[0];
+
+        const messageInterval = setInterval(() => {
+            phraseIndex = (phraseIndex + 1) % phrases.length;
+            loadingText.textContent = phrases[phraseIndex];
+        }, 2000); // Change phrase every 2 seconds
+
         try {
+            // 3. Attempt Login
             this.currentUser = await Auth.login(email, password);
+
+            // Success
+            clearInterval(messageInterval);
+            loadingText.textContent = "Access Granted";
+
             Utils.showMessage('authMessage', 'Login successful', 'success');
-            
+
             setTimeout(() => {
+                // Ensure loader is hidden when moving to app (though page change does it)
+                loaderScreen.classList.add('hidden');
+                loginForm.classList.remove('hidden'); // Reset for next time (logout)
+
                 this.showApp();
                 this.navigateTo(Config.PAGES.DASHBOARD);
             }, 500);
         } catch (error) {
-            Utils.showMessage('authMessage', error.message || 'Login failed', 'error');
+            // Failure
+            clearInterval(messageInterval);
+
+            // Show form again
+            loaderScreen.classList.add('hidden');
+            loginForm.classList.remove('hidden');
+
+            Utils.showMessage('authMessage', error.message || 'Login failed - Connection Timeout?', 'error');
         }
     },
 
@@ -237,7 +282,7 @@ const UI = {
         try {
             this.currentUser = await Auth.register(name, email, password, role);
             Utils.showMessage('authMessage', 'Registration successful', 'success');
-            
+
             setTimeout(() => {
                 this.showApp();
                 this.navigateTo(Config.PAGES.DASHBOARD);
@@ -262,7 +307,7 @@ const UI = {
     toggleAuthForm() {
         const loginForm = document.getElementById('loginForm');
         const registerForm = document.getElementById('registerForm');
-        
+
         if (loginForm && registerForm) {
             loginForm.classList.toggle('hidden');
             registerForm.classList.toggle('hidden');
@@ -279,7 +324,7 @@ const UI = {
         document.getElementById('registerEmail').value = '';
         document.getElementById('registerPassword').value = '';
         document.getElementById('registerRole').value = 'student';
-        
+
         const loginForm = document.getElementById('loginForm');
         const registerForm = document.getElementById('registerForm');
         if (loginForm && registerForm) {

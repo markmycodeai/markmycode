@@ -366,3 +366,79 @@
 .h-5 {
     height: 1.25rem;
 }
+
+/* 5. Loading Screen */
+.nexus-loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+    text-align: center;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.nexus-spinner-container {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin-bottom: 2rem;
+}
+
+.nexus-spinner-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    border-top-color: #9333ea;
+    /* purple-600 */
+    animation: spinner 1.5s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+.nexus-spinner-ring:nth-child(2) {
+    inset: 10px;
+    border-top-color: #ec4899;
+    /* pink-500 */
+    animation-delay: 0.1s;
+    animation-duration: 1.2s;
+}
+
+.nexus-spinner-ring:nth-child(3) {
+    inset: 20px;
+    border-top-color: #3b82f6;
+    /* blue-500 */
+    animation-delay: 0.2s;
+    animation-duration: 1s;
+}
+
+.nexus-core {
+    position: absolute;
+    inset: 30px;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.1;
+    animation: pulse 1s infinite alternate;
+}
+
+@keyframes spinner {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.nexus-loading-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    color: white;
+    min-height: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.nexus-loading-subtext {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.5);
+}
