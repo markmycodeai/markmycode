@@ -52,7 +52,7 @@ const UI = {
 
         // Hide all links by default
         const links = [
-            'adminLink', 'collegeLink', 'deptLink', 'batchLink',
+            'dashboardLink', 'adminLink', 'collegeLink', 'deptLink', 'batchLink',
             'studentLink', 'logoutBtn'
         ];
 
@@ -74,11 +74,13 @@ const UI = {
             document.getElementById('deptLink')?.classList.remove('hidden');
         } else if (role === 'batch') {
             document.getElementById('batchLink')?.classList.remove('hidden');
+        } else if (role === 'student') {
+            document.getElementById('studentLink')?.classList.remove('hidden');
         }
 
-        // Show student link (Practice) and logout for all authenticated users
-        document.getElementById('studentLink')?.classList.remove('hidden');
+        // Show logout and dashboard for all authenticated users
         document.getElementById('logoutBtn')?.classList.remove('hidden');
+        document.getElementById('dashboardLink')?.classList.remove('hidden');
     },
 
     /**
@@ -305,6 +307,8 @@ const UI = {
      */
     handleLogout() {
         Auth.logout();
+        this.currentUser = null;
+        this.setupNavigation();
         this.showAuth();
         this.resetAuthForm();
     },
