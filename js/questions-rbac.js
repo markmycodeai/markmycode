@@ -278,8 +278,29 @@ const Questions = {
 
         this.editingId = questionId;
         this.renderAdminList();
+
+        // Mobile UX: Switch to Detail View ("Page")
+        const grid = document.querySelector('.admin-questions-grid');
+        if (grid) {
+            grid.classList.add('mobile-details-active');
+            // Scroll to top to ensure visibility of the new "page"
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
         this.showEditForm(question);
         this.showQuestionDetails(question);
+    },
+
+    /**
+     * Mobile UX: Go back to list
+     */
+    backToMobileList() {
+        const grid = document.querySelector('.admin-questions-grid');
+        if (grid) {
+            grid.classList.remove('mobile-details-active');
+        }
+        this.editingId = null; // Optional: deselect to clear highlight
+        this.renderAdminList();
     },
 
     /**
@@ -288,7 +309,6 @@ const Questions = {
     showEditForm(question) {
         const prefix = this.config.prefix || 'admin';
         const panelId = prefix + 'QEditPanel';
-        // Fallback for admin legacy
         const container = document.getElementById(panelId) || (prefix === 'admin' ? document.getElementById('adminQuestionFormPanel') : null);
 
         if (!container) return;
@@ -297,15 +317,14 @@ const Questions = {
         const isAdmin = user.role === 'admin';
         const self = this;
         const formContentId = prefix + 'QEditForm';
-
-        // NOTE: We are generating the inner HTML. We should check if we are targeting the Panel or the Form content container.
-        // Index.html structure: Panel > Header + FormContentDiv.
-        // If container is the Panel, we might overwrite the header.
-        // We should try to find the specific content div if it exists.
         const contentDiv = document.getElementById(formContentId);
         const targetContainer = contentDiv || container;
 
         let html = '<div class="form-compact" style="background: var(--bg-surface); padding: 1.25rem; border: 1px solid var(--border-subtle); border-radius: 4px;">';
+
+        // Mobile Back Button
+        html += '<button type="button" class="btn btn-sm btn-secondary hidden-desktop" style="margin-bottom: 1rem; width: 100%; justify-content: flex-start; text-align: left;" id="' + prefix + 'QMobileBack">← Back to Question List</button>';
+
         html += '<input type="hidden" id="' + prefix + 'QEditId" value="' + question.id + '" />';
 
         if (isAdmin) {
@@ -388,6 +407,12 @@ const Questions = {
 
         document.getElementById(prefix + 'QSave').addEventListener('click', function () { self.saveAdminQuestionInline(); });
         document.getElementById(prefix + 'QDel').addEventListener('click', function () { self.deleteConfirmAdminPanel(); });
+
+        // Mobile Back Button Listener
+        const backBtn = document.getElementById(prefix + 'QMobileBack');
+        if (backBtn) {
+            backBtn.addEventListener('click', function () { self.backToMobileList(); });
+        }
 
         if (isAdmin) {
             document.getElementById(prefix + 'QEditCollege').addEventListener('change', function () { self.onAdminQEditCollegeChange(); });
