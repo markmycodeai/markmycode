@@ -94,7 +94,8 @@ select:focus {
 }
 
 .text-gradient {
-    background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+    background: linear-gradient(135deg, var(--text-main) 0%, var(--text-body) 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }

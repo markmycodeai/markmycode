@@ -63,9 +63,9 @@ const StudentProfileViewer = {
                         <button class="nexus-modal-close">&times;</button>
                     </div>
                     
-                    <div class="profile-tabs" style="display: flex; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 0 1.5rem;">
-                        <button class="profile-tab-btn active" data-target="tab-overview" style="background: none; border: none; color: #a0aec0; padding: 1rem 1.5rem; cursor: pointer; border-bottom: 2px solid transparent; font-weight: 500;">Overview</button>
-                        <button class="profile-tab-btn" data-target="tab-activity" style="background: none; border: none; color: #a0aec0; padding: 1rem 1.5rem; cursor: pointer; border-bottom: 2px solid transparent; font-weight: 500;">Activity & Stats</button>
+                    <div class="profile-tabs" style="display: flex; border-bottom: 1px solid var(--border-subtle); padding: 0 1.5rem;">
+                        <button class="profile-tab-btn active" data-target="tab-overview" style="background: none; border: none; color: var(--text-muted); padding: 1rem 1.5rem; cursor: pointer; border-bottom: 2px solid transparent; font-weight: 500;">Overview</button>
+                        <button class="profile-tab-btn" data-target="tab-activity" style="background: none; border: none; color: var(--text-muted); padding: 1rem 1.5rem; cursor: pointer; border-bottom: 2px solid transparent; font-weight: 500;">Activity & Stats</button>
                     </div>
                     
                     <div class="nexus-modal-body" style="flex: 1; overflow-y: auto; padding: 1.5rem;">
@@ -73,20 +73,20 @@ const StudentProfileViewer = {
                         <div id="tab-overview" class="profile-tab-content">
                             <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
                                 <!-- Identity Card -->
-                                <div style="flex: 1; min-width: 300px; background: rgba(255,255,255,0.03); border-radius: 8px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.05);">
+                                <div style="flex: 1; min-width: 300px; background: var(--bg-surface); border-radius: 8px; padding: 1.5rem; border: 1px solid var(--border-subtle);">
                                     <div style="text-align: center; margin-bottom: 1.5rem;">
-                                        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; margin: 0 auto 1rem; color: white;" id="sp-avatar">
+                                        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary-500), var(--primary-600)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; margin: 0 auto 1rem; color: #000;" id="sp-avatar">
                                             U
                                         </div>
-                                        <h3 id="sp-name" style="margin: 0; color: white;">Student Name</h3>
-                                        <p id="sp-username" style="color: #a0aec0; margin: 0.25rem 0;">@username</p>
+                                        <h3 id="sp-name" style="margin: 0; color: var(--text-main);">Student Name</h3>
+                                        <p id="sp-username" style="color: var(--text-muted); margin: 0.25rem 0;">@username</p>
                                         <div id="sp-status" style="margin-top: 0.5rem;"></div>
                                     </div>
                                     
                                     <div style="display: grid; gap: 1rem;">
                                         <div>
-                                            <div style="font-size: 0.8rem; color: #718096; text-transform: uppercase; letter-spacing: 0.05em;">Email</div>
-                                            <div id="sp-email" style="color: #e2e8f0;">-</div>
+                                            <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Email</div>
+                                            <div id="sp-email" style="color: var(--text-body);">-</div>
                                         </div>
                                         <!-- Removed Phone and URN as they are not in schema -->
                                     </div>
@@ -94,23 +94,23 @@ const StudentProfileViewer = {
                                 
                                 <!-- Academic Info -->
                                 <div style="flex: 1; min-width: 300px;">
-                                    <h4 style="color: #e2e8f0; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; margin-top: 0;">Academic Details</h4>
+                                    <h4 style="color: var(--text-main); border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem; margin-top: 0;">Academic Details</h4>
                                     <div style="display: grid; gap: 1rem;">
-                                        <div style="background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 6px;">
-                                            <div style="font-size: 0.8rem; color: #718096;">College</div>
-                                            <div id="sp-college" style="font-weight: 500; color: #e2e8f0;">-</div>
+                                        <div style="background: var(--bg-elevated); padding: 1rem; border-radius: 6px; border: 1px solid var(--border-subtle);">
+                                            <div style="font-size: 0.8rem; color: var(--text-muted);">College</div>
+                                            <div id="sp-college" style="font-weight: 500; color: var(--text-main);">-</div>
                                         </div>
-                                        <div style="background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 6px;">
-                                            <div style="font-size: 0.8rem; color: #718096;">Department</div>
-                                            <div id="sp-dept" style="font-weight: 500; color: #e2e8f0;">-</div>
+                                        <div style="background: var(--bg-elevated); padding: 1rem; border-radius: 6px; border: 1px solid var(--border-subtle);">
+                                            <div style="font-size: 0.8rem; color: var(--text-muted);">Department</div>
+                                            <div id="sp-dept" style="font-weight: 500; color: var(--text-main);">-</div>
                                         </div>
-                                        <div style="background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 6px;">
-                                            <div style="font-size: 0.8rem; color: #718096;">Batch</div>
-                                            <div id="sp-batch" style="font-weight: 500; color: #e2e8f0;">-</div>
+                                        <div style="background: var(--bg-elevated); padding: 1rem; border-radius: 6px; border: 1px solid var(--border-subtle);">
+                                            <div style="font-size: 0.8rem; color: var(--text-muted);">Batch</div>
+                                            <div id="sp-batch" style="font-weight: 500; color: var(--text-main);">-</div>
                                         </div>
-                                        <div style="background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 6px;">
-                                            <div style="font-size: 0.8rem; color: #718096;">Registration Date</div>
-                                            <div id="sp-date" style="font-weight: 500; color: #e2e8f0;">-</div>
+                                        <div style="background: var(--bg-elevated); padding: 1rem; border-radius: 6px; border: 1px solid var(--border-subtle);">
+                                            <div style="font-size: 0.8rem; color: var(--text-muted);">Registration Date</div>
+                                            <div id="sp-date" style="font-weight: 500; color: var(--text-main);">-</div>
                                         </div>
                                     </div>
                                 </div>
@@ -120,23 +120,23 @@ const StudentProfileViewer = {
                         <!-- Activity Tab -->
                         <div id="tab-activity" class="profile-tab-content" style="display: none;">
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-                                <div class="stat-card" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05)); border: 1px solid rgba(59, 130, 246, 0.2); padding: 1.5rem; border-radius: 8px; text-align: center;">
-                                    <div style="font-size: 2.5rem; font-weight: bold; color: #60a5fa;" id="stat-total">0</div>
-                                    <div style="color: #93c5fd; font-size: 0.9rem;">Total Attempts</div>
+                                <div class="stat-card" style="background: var(--bg-surface); border: 1px solid var(--primary-500); padding: 1.5rem; border-radius: 8px; text-align: center; box-shadow: var(--shadow-glow);">
+                                    <div style="font-size: 2.5rem; font-weight: bold; color: var(--primary-500);" id="stat-total">0</div>
+                                    <div style="color: var(--text-muted); font-size: 0.9rem;">Total Attempts</div>
                                 </div>
-                                <div class="stat-card" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05)); border: 1px solid rgba(16, 185, 129, 0.2); padding: 1.5rem; border-radius: 8px; text-align: center;">
-                                    <div style="font-size: 2.5rem; font-weight: bold; color: #34d399;" id="stat-solved">0</div>
-                                    <div style="color: #6ee7b7; font-size: 0.9rem;">Problems Solved</div>
+                                <div class="stat-card" style="background: var(--bg-surface); border: 1px solid var(--success); padding: 1.5rem; border-radius: 8px; text-align: center;">
+                                    <div style="font-size: 2.5rem; font-weight: bold; color: var(--success);" id="stat-solved">0</div>
+                                    <div style="color: var(--text-muted); font-size: 0.9rem;">Problems Solved</div>
                                 </div>
-                                <div class="stat-card" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05)); border: 1px solid rgba(245, 158, 11, 0.2); padding: 1.5rem; border-radius: 8px; text-align: center;">
-                                    <div style="font-size: 2.5rem; font-weight: bold; color: #fbbf24;" id="stat-accuracy">0%</div>
-                                    <div style="color: #fcd34d; font-size: 0.9rem;">Accuracy</div>
+                                <div class="stat-card" style="background: var(--bg-surface); border: 1px solid var(--accent-cyan); padding: 1.5rem; border-radius: 8px; text-align: center;">
+                                    <div style="font-size: 2.5rem; font-weight: bold; color: var(--accent-cyan);" id="stat-accuracy">0%</div>
+                                    <div style="color: var(--text-muted); font-size: 0.9rem;">Accuracy</div>
                                 </div>
                             </div>
                             
-                            <h3 style="color: #e2e8f0; font-size: 1.1rem; margin-bottom: 1rem;">Code Submissions</h3>
+                            <h3 style="color: var(--text-main); font-size: 1.1rem; margin-bottom: 1rem;">Code Submissions</h3>
                             <div id="sp-submissions-list">
-                                <div style="text-align: center; color: #718096; padding: 2rem;">Loading submissions...</div>
+                                <div style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading submissions...</div>
                             </div>
                         </div>
                     </div>
@@ -145,8 +145,8 @@ const StudentProfileViewer = {
             
             <style>
                 .profile-tab-btn.active {
-                    color: #fff !important;
-                    border-bottom-color: #3b82f6 !important;
+                    color: var(--text-main) !important;
+                    border-bottom-color: var(--primary-500) !important;
                 }
                 
                 /* Nexus Modal Styles - Self Contained */
@@ -156,7 +156,7 @@ const StudentProfileViewer = {
                     left: 0;
                     width: 100%;
                     height: 100%;
-                    background: rgba(0, 0, 0, 0.75);
+                    background: var(--bg-glass);
                     backdrop-filter: blur(8px);
                     display: flex;
                     align-items: center;
@@ -173,11 +173,11 @@ const StudentProfileViewer = {
                 }
                 
                 .nexus-modal-content {
-                    background: #111827; /* Dark background */
-                    color: #ecf0f1;
+                    background: var(--bg-elevated);
+                    color: var(--text-main);
                     border-radius: 12px;
-                    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    box-shadow: var(--shadow-lg);
+                    border: 1px solid var(--border-subtle);
                     width: 90%;
                     max-width: 900px;
                     max-height: 90vh;
@@ -189,25 +189,25 @@ const StudentProfileViewer = {
                 
                 .nexus-modal-header {
                     padding: 1.5rem;
-                    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                    border-bottom: 1px solid var(--border-subtle);
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
-                    background: rgba(255, 255, 255, 0.02);
+                    background: var(--bg-surface);
                 }
                 
                 .nexus-modal-title {
                     margin: 0;
                     font-size: 1.25rem;
                     font-weight: 600;
-                    color: #fff;
+                    color: var(--text-main);
                     letter-spacing: -0.025em;
                 }
                 
                 .nexus-modal-close {
                     background: transparent;
                     border: none;
-                    color: #9ca3af;
+                    color: var(--text-muted);
                     font-size: 1.5rem;
                     cursor: pointer;
                     line-height: 1;
@@ -217,8 +217,8 @@ const StudentProfileViewer = {
                 }
                 
                 .nexus-modal-close:hover {
-                    color: #fff;
-                    background: rgba(255, 255, 255, 0.1);
+                    color: var(--text-main);
+                    background: var(--bg-surface);
                 }
                 
                 .nexus-modal-body {
@@ -273,7 +273,8 @@ const StudentProfileViewer = {
         document.getElementById('sp-dept').textContent = '...';
         document.getElementById('sp-batch').textContent = '...';
         document.getElementById('sp-avatar').textContent = '';
-        document.getElementById('sp-submissions-list').innerHTML = '<div style="text-align: center; color: #718096; padding: 2rem;">Loading details...</div>';
+        document.getElementById('sp-avatar').textContent = '';
+        document.getElementById('sp-submissions-list').innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading details...</div>';
 
         // Reset stats
         document.getElementById('stat-total').textContent = '0';
@@ -327,7 +328,7 @@ const StudentProfileViewer = {
         document.getElementById('stat-solved').textContent = '-';
         document.getElementById('stat-accuracy').textContent = '-';
         document.getElementById('sp-submissions-list').innerHTML = `
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3rem; gap: 1rem; color: #94a3b8;">
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3rem; gap: 1rem; color: var(--text-muted);">
                 <div class="spinner"></div>
                 <div style="font-size: 0.9rem;">Loading activity...</div>
             </div>
@@ -372,7 +373,7 @@ const StudentProfileViewer = {
             console.log('Stats not available (expected if no endpoint)');
 
             document.getElementById('sp-submissions-list').innerHTML =
-                '<div style="text-align: center; color: #718096; padding: 2rem;">Detailed activity stats are not currently available for this view.</div>';
+                '<div style="text-align: center; color: var(--text-muted); padding: 2rem;">Detailed activity stats are not currently available for this view.</div>';
         }
     },
 
@@ -427,21 +428,21 @@ const StudentProfileViewer = {
         // Render Submissions List
         const listContainer = document.getElementById('sp-submissions-list');
         if (submissions.length === 0) {
-            listContainer.innerHTML = '<div style="text-align: center; color: #718096; padding: 2rem;">No submissions yet.</div>';
+            listContainer.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 2rem;">No submissions yet.</div>';
             return;
         }
 
         let html = '<div style="display: flex; flex-direction: column; gap: 0.5rem;">';
         submissions.forEach(sub => {
             const isSuccess = sub.status === 'correct' || sub.status === 'Accepted';
-            const color = isSuccess ? '#34d399' : '#f87171';
+            const color = isSuccess ? 'var(--success)' : 'var(--error)';
             const date = new Date(sub.submitted_at).toLocaleDateString();
 
             html += `
-                <div style="background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid ${color};">
+                <div style="background: var(--bg-surface); padding: 1rem; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid ${color}; border: 1px solid var(--border-subtle); border-left-width: 3px; border-left-color: ${color};">
                     <div>
-                        <div style="font-weight: 500; color: #e2e8f0;">${Utils.escapeHtml(sub.question_title || 'Unknown Question')}</div>
-                        <div style="font-size: 0.8rem; color: #718096;">
+                        <div style="font-weight: 500; color: var(--text-main);">${Utils.escapeHtml(sub.question_title || 'Unknown Question')}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">
                             ${date} • ${Utils.escapeHtml(sub.topic_name || 'Unknown Topic')} • ${Utils.escapeHtml(sub.language)}
                         </div>
                     </div>
