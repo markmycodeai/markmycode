@@ -23,7 +23,7 @@
     height: 100%;
     overflow: hidden;
     z-index: 0;
-    background: linear-gradient(-45deg, #0f172a, #1e1b4b, #312e81, #0f172a);
+    background: linear-gradient(-45deg, #0f172a, #271a00, #451a03, #0f172a);
     background-size: 400% 400%;
     animation: gradientBG 15s ease infinite;
 }
@@ -91,7 +91,7 @@
 .nexus-title-glow {
     position: absolute;
     inset: -0.25rem;
-    background: linear-gradient(to right, rgba(147, 51, 234, 0.3), rgba(236, 72, 153, 0.3), rgba(59, 130, 246, 0.3));
+    background: linear-gradient(to right, rgba(234, 179, 8, 0.3), rgba(249, 115, 22, 0.3), rgba(253, 224, 71, 0.3));
     filter: blur(12px);
     /* blur-xl */
     opacity: 0.75;
@@ -152,9 +152,9 @@
 
 .nexus-input:focus {
     outline: none;
-    border-color: rgba(168, 85, 247, 0.5);
-    /* purple-500/50 */
-    box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
+    border-color: rgba(234, 179, 8, 0.5);
+    /* yellow-500/50 */
+    box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.2);
 }
 
 /* Toggle Switch */
@@ -179,8 +179,8 @@
 }
 
 .nexus-toggle input:checked+.nexus-toggle-track {
-    background: #9333ea;
-    /* purple-600 */
+    background: #ca8a04;
+    /* yellow-600 */
 }
 
 .nexus-toggle-thumb {
@@ -227,22 +227,22 @@
     width: 100%;
     padding: 0.75rem;
     border-radius: 0.5rem;
-    background: #9333ea;
-    /* purple-600 */
-    color: white;
-    font-weight: 500;
+    background: #eab308;
+    /* yellow-500 */
+    color: black;
+    font-weight: 600;
     transition: all 0.2s;
-    box-shadow: 0 10px 15px -3px rgba(168, 85, 247, 0.2);
+    box-shadow: 0 10px 15px -3px rgba(234, 179, 8, 0.2);
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .nexus-btn:hover {
-    background: #7e22ce;
-    /* purple-700 */
+    background: #ca8a04;
+    /* yellow-600 */
     transform: translateY(-1px);
-    box-shadow: 0 10px 15px -3px rgba(168, 85, 247, 0.4);
+    box-shadow: 0 10px 15px -3px rgba(234, 179, 8, 0.4);
 }
 
 .nexus-btn:disabled {
@@ -390,23 +390,23 @@
     inset: 0;
     border-radius: 50%;
     border: 3px solid transparent;
-    border-top-color: #9333ea;
-    /* purple-600 */
+    border-top-color: #eab308;
+    /* yellow-500 */
     animation: spinner 1.5s cubic-bezier(0.5, 0, 0.5, 1) infinite;
 }
 
 .nexus-spinner-ring:nth-child(2) {
     inset: 10px;
-    border-top-color: #ec4899;
-    /* pink-500 */
+    border-top-color: #f97316;
+    /* orange-500 */
     animation-delay: 0.1s;
     animation-duration: 1.2s;
 }
 
 .nexus-spinner-ring:nth-child(3) {
     inset: 20px;
-    border-top-color: #3b82f6;
-    /* blue-500 */
+    border-top-color: #fef08a;
+    /* yellow-200 */
     animation-delay: 0.2s;
     animation-duration: 1s;
 }

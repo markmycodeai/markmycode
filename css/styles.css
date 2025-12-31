@@ -119,13 +119,13 @@ nav .container {
 .btn-primary {
     background: var(--primary-600);
     color: white;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    box-shadow: 0 4px 12px rgba(234, 179, 8, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .btn-primary:hover {
     background: var(--primary-500);
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+    box-shadow: 0 0 20px rgba(234, 179, 8, 0.4);
     border-color: rgba(255, 255, 255, 0.2);
 }
 
@@ -858,9 +858,9 @@ tr:hover td {
     padding: 0.25rem 0.5rem;
     font-size: 0.75rem;
 }
+
 .form-grid-4 {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
 }
-
