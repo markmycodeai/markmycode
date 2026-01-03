@@ -319,7 +319,7 @@ const AdminNotes = {
       html += `<tr>`;
       html += `<td>${this.escapeHtml(note.title)}</td>`;
       html += `<td><a href="${this.escapeHtml(note.drive_link)}" target="_blank" style="color: var(--primary); text-decoration: none;">${linkDisplay}</a></td>`;
-      html += `<td>${this.escapeHtml(note.batch_id)}</td>`;
+      html += `<td>${this.escapeHtml(note.batch_name || note.batch_id)}</td>`;
       html += `<td class="flex-gap" style="justify-content: center;">`;
       html += `<button class="btn btn-sm btn-info" onclick="AdminNotes.openModal('${note.id}')">Edit</button>`;
       html += `<button class="btn btn-sm btn-danger" onclick="AdminNotes.deleteConfirm('${note.id}')">Delete</button>`;

@@ -106,6 +106,8 @@ const Admin = {
                 await this.loadColleges();
                 break;
             case 'departments':
+                // Load colleges first to resolve names
+                await this.loadColleges();
                 await this.loadDepartments();
                 break;
             case 'batches':

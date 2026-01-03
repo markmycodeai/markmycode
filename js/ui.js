@@ -193,6 +193,22 @@ const UI = {
             });
         }
 
+        // Forgot Password Form
+        const forgotPasswordBtn = document.getElementById('forgotPasswordBtn');
+        if (forgotPasswordBtn) {
+            forgotPasswordBtn.addEventListener('click', () => this.handleForgotPasswordRequest());
+        }
+
+        const forgotEmail = document.getElementById('forgotEmail');
+        if (forgotEmail) {
+            forgotEmail.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.handleForgotPasswordRequest();
+                }
+            });
+        }
+
         // Modal close buttons
         document.querySelectorAll('.close-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -318,6 +334,72 @@ const UI = {
         this.setupNavigation();
         this.showAuth();
         this.resetAuthForm();
+    },
+
+    /**
+     * Handle forgot password request
+     */
+    async handleForgotPasswordRequest() {
+        const email = document.getElementById('forgotEmail')?.value || '';
+        console.log('[Forgot Password] Email entered:', email);
+
+        if (!email) {
+            const errorBox = document.getElementById('forgotErrorMessage');
+            errorBox.textContent = 'Please enter your email address';
+            errorBox.classList.remove('hidden');
+            console.log('[Forgot Password] No email provided');
+            return;
+        }
+
+        // Clear previous messages
+        document.getElementById('forgotErrorMessage').classList.add('hidden');
+        document.getElementById('forgotSuccessMessage').classList.add('hidden');
+
+        // Show loading state
+        const loadingBox = document.getElementById('forgotLoadingState');
+        const btn = document.getElementById('forgotPasswordBtn');
+        loadingBox.classList.remove('hidden');
+        btn.disabled = true;
+        btn.textContent = 'Sending...';
+        console.log('[Forgot Password] Sending request to backend...');
+
+        try {
+            // Call backend to request password reset
+            const response = await Auth.requestPasswordReset(email);
+            console.log('[Forgot Password] Backend response:', response);
+
+            // Hide loading and show success
+            loadingBox.classList.add('hidden');
+            const successBox = document.getElementById('forgotSuccessMessage');
+            successBox.classList.remove('hidden');
+
+            // Clear the form
+            document.getElementById('forgotEmail').value = '';
+
+            // Reset button
+            btn.disabled = false;
+            btn.textContent = 'Send Reset Email';
+
+            // Auto-redirect to login after 5 seconds
+            setTimeout(() => {
+                document.getElementById('forgotPasswordForm').classList.add('hidden');
+                document.getElementById('loginForm').classList.remove('hidden');
+                loadingBox.classList.add('hidden');
+                successBox.classList.add('hidden');
+            }, 5000);
+
+        } catch (error) {
+            // Hide loading and show error
+            loadingBox.classList.add('hidden');
+            const errorBox = document.getElementById('forgotErrorMessage');
+            errorBox.textContent = error.message || 'Failed to send reset link. Please try again.';
+            errorBox.classList.remove('hidden');
+            console.error('[Forgot Password] Error:', error);
+
+            // Reset button
+            btn.disabled = false;
+            btn.textContent = 'Send Reset Email';
+        }
     },
 
     /**

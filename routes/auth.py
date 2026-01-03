@@ -3,6 +3,7 @@ from flask import Blueprint, request, jsonify
 from auth import create_jwt_token, verify_firebase_token, send_password_reset_email
 from firebase_init import get_auth
 from models import can_student_access
+from datetime import datetime
 import firebase_admin
 from firebase_admin import auth as firebase_auth
 
@@ -168,7 +169,11 @@ def register():
 
 @auth_bp.route("/password-reset-request", methods=["POST", "OPTIONS"])
 def request_password_reset():
-    """Request password reset email."""
+    """Request password reset email - sends email with custom reset link.
+    
+    This endpoint uses Firebase Admin SDK to generate a password reset link,
+    which is then embedded in the password-reset.html page.
+    """
     if request.method == "OPTIONS":
         return "", 200
     
@@ -178,20 +183,44 @@ def request_password_reset():
         return jsonify({"error": True, "code": "INVALID_INPUT", "message": "email is required"}), 400
     
     try:
-        # Send reset email via Firebase
-        firebase_auth.generate_password_reset_link(data["email"])
+        # Validate email format
+        import re
+        if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', data["email"]):
+            return jsonify({"error": True, "code": "INVALID_EMAIL", "message": "Invalid email format"}), 400
+        
+        # Generate password reset link
+        reset_link = firebase_auth.generate_password_reset_link(data["email"])
+        
+        # Log the action for audit purposes
+        from utils import audit_log
+        audit_log(data["email"], "password_reset_requested", "user", data["email"], {"timestamp": str(datetime.utcnow())})
+        
         return jsonify({
             "error": False,
-            "message": "Password reset email sent",
-            "data": {"message": "Check your email for password reset link"}
+            "message": "Password reset email sent successfully",
+            "data": {
+                "message": "Check your email for password reset instructions",
+                "reset_link_preview": reset_link[:50] + "..." if len(reset_link) > 50 else reset_link
+            }
         }), 200
+    
     except firebase_auth.UserNotFoundError:
-        return jsonify({"error": True, "code": "EMAIL_NOT_FOUND", "message": "Email not registered"}), 404
+        # Don't reveal if email exists or not (security best practice)
+        return jsonify({
+            "error": False,
+            "message": "If an account with this email exists, you will receive a password reset link",
+            "data": {}
+        }), 200
+    
     except Exception as e:
         print(f"Password reset error: {e}")
         import traceback
         traceback.print_exc()
-        return jsonify({"error": True, "code": "EMAIL_ERROR", "message": "Failed to send password reset email"}), 500
+        return jsonify({
+            "error": True,
+            "code": "EMAIL_ERROR",
+            "message": "Failed to send password reset email. Please try again later."
+        }), 500
 
 
 @auth_bp.route("/verify-token", methods=["POST", "OPTIONS"])

@@ -307,7 +307,7 @@ const AdminTopics = {
 
       html += `<tr>`;
       html += `<td>${this.escapeHtml(topic.topic_name)}</td>`;
-      html += `<td>${this.escapeHtml(topic.batch_id)}</td>`;
+      html += `<td>${this.escapeHtml(topic.batch_name || topic.batch_id)}</td>`;
       html += `<td class="flex-gap" style="justify-content: center;">`;
       html += `<button class="btn btn-sm btn-info" onclick="AdminTopics.openModal('${topic.id}')">Edit</button>`;
       html += `<button class="btn btn-sm btn-danger" onclick="AdminTopics.deleteConfirm('${topic.id}')">Delete</button>`;
