@@ -213,11 +213,18 @@
 .nexus-link {
     font-size: 0.875rem;
     color: var(--text-muted);
-    transition: color 0.2s;
+    transition: all 0.2s;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    padding: 2px 4px;
+    border-radius: 4px;
 }
 
 .nexus-link:hover {
     color: var(--primary-500);
+    text-decoration-color: var(--primary-500);
+    background: rgba(255, 255, 255, 0.05);
 }
 
 /* Submit Button */

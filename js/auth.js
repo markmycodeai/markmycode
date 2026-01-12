@@ -76,5 +76,21 @@ const Auth = {
      */
     logout() {
         Utils.clearAuth();
+    },
+
+    /**
+     * Request Password Reset
+     */
+    async requestPasswordReset(email) {
+        try {
+            const response = await Utils.apiRequest('/auth/password-reset-request', {
+                method: 'POST',
+                body: JSON.stringify({ email })
+            });
+            return response;
+        } catch (error) {
+            console.error('Password reset request failed:', error);
+            throw error;
+        }
     }
 };

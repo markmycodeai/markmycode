@@ -178,13 +178,42 @@ def request_password_reset():
         return jsonify({"error": True, "code": "INVALID_INPUT", "message": "email is required"}), 400
     
     try:
-        # Send reset email via Firebase
-        firebase_auth.generate_password_reset_link(data["email"])
-        return jsonify({
-            "error": False,
-            "message": "Password reset email sent",
-            "data": {"message": "Check your email for password reset link"}
-        }), 200
+        # Send reset email via Backend B (Auth Service)
+        import requests
+        from config import AUTH_SERVICE_URL, SERVICE_SECRET
+
+        # Backend B is responsible for using the Client SDK to trigger the actual email
+        url = f"{AUTH_SERVICE_URL}/api/trigger-reset"
+        headers = {
+            "Content-Type": "application/json",
+            "X-Service-Secret": SERVICE_SECRET
+        }
+        
+        resp = requests.post(url, json={"email": data["email"]}, headers=headers, timeout=10)
+        
+        if resp.status_code == 200:
+            return jsonify({
+                "error": False,
+                "message": "Password reset email sent",
+                "data": {"message": "Check your email for password reset link"}
+            }), 200
+        else:
+            # Handle errors from Backend B
+            try:
+                error_data = resp.json()
+            except:
+                error_data = {}
+            
+            error_code = error_data.get("error", "EMAIL_ERROR")
+            
+            if resp.status_code == 404:
+                return jsonify({"error": True, "code": "EMAIL_NOT_FOUND", "message": "Email not registered"}), 404
+                
+            return jsonify({
+                "error": True, 
+                "code": error_code, 
+                "message": "Failed to send password reset email"
+            }), resp.status_code
     except firebase_auth.UserNotFoundError:
         return jsonify({"error": True, "code": "EMAIL_NOT_FOUND", "message": "Email not registered"}), 404
     except Exception as e:

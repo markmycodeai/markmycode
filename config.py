@@ -31,6 +31,11 @@ GROQ_API_KEY_FALLBACK = os.getenv("GROQ_API_KEY_FALLBACK")
 # CORS Configuration
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 
+# Auth Service (Backend B)
+AUTH_SERVICE_URL = os.getenv("AUTH_SERVICE_URL", "http://localhost:3002") # Default to local port 3002 if not set
+SERVICE_SECRET = os.getenv("SERVICE_SECRET", "dev-secret")
+
+
 # Rate Limiting
 RATE_LIMIT_SUBMISSIONS_PER_HOUR = 100
 RATE_LIMIT_API_CALLS_PER_HOUR = 1000
