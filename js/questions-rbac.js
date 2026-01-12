@@ -138,6 +138,25 @@ const Questions = {
                 this.colleges = [];
                 this.departments = [];
                 this.batches = [];
+            } else if (user.role === 'college') {
+                // Load Departments and Batches for this college
+                // Note: Endpoints might be /college/departments etc.
+                const [deptsRes, batchesRes, topicsRes] = await Promise.all([
+                    Utils.apiRequest('/college/departments').catch(() => ({ departments: [] })),
+                    Utils.apiRequest('/college/batches').catch(() => ({ batches: [] })),
+                    Utils.apiRequest('/admin/topics').catch(() => ({ topics: [] })) // Try loading topics
+                ]);
+                this.departments = deptsRes.data?.departments || deptsRes.departments || [];
+                this.batches = batchesRes.data?.batches || batchesRes.batches || [];
+                this.topics = topicsRes.data?.topics || topicsRes.topics || [];
+            } else if (user.role === 'department') {
+                // Load Batches for this department
+                const [batchesRes, topicsRes] = await Promise.all([
+                    Utils.apiRequest('/department/batches').catch(() => ({ batches: [] })),
+                    Utils.apiRequest('/admin/topics').catch(() => ({ topics: [] })) // Try loading topics
+                ]);
+                this.batches = batchesRes.data?.batches || batchesRes.batches || [];
+                this.topics = topicsRes.data?.topics || topicsRes.topics || [];
             }
         } catch (error) {
             console.error('Load hierarchy data error:', error);
@@ -180,8 +199,8 @@ const Questions = {
 
         const self = this;
         this.questions.forEach(q => {
-            const collegeNm = self.findCollegeNameById(q.college_id);
-            const deptName = self.findDepartmentNameById(q.department_id);
+            const collegeNm = q.college_name || self.findCollegeNameById(q.college_id);
+            const deptName = q.department_name || self.findDepartmentNameById(q.department_id);
             const isSelected = self.editingId === q.id;
             const bgColor = isSelected ? 'background-color: var(--bg-elevated); border-left: 3px solid var(--primary-500);' : 'border-left: 3px solid transparent; background: var(--bg-surface);';
             const hoverStyle = "this.style.background='var(--bg-elevated)'";
@@ -190,7 +209,7 @@ const Questions = {
             html += '<div style="font-weight: bold; margin-bottom: 0.25rem; color: var(--text-main);">' + Utils.escapeHtml(q.title) + '</div>';
 
             // Show topic below title (Requested for batch admin, but good for all)
-            const topicName = self.findTopicNameById(q.topic_id) || q.topic_name || 'No Topic';
+            const topicName = q.topic_name || self.findTopicNameById(q.topic_id) || 'No Topic';
             html += '<div style="font-size: 0.8rem; color: var(--primary-500); margin-bottom: 0.25rem; font-weight: 500;">' + Utils.escapeHtml(topicName) + '</div>';
 
             if (collegeNm !== 'N/A' && deptName !== 'N/A') {
@@ -235,10 +254,10 @@ const Questions = {
         this.questions.forEach(q => {
             html += '<tr>';
             html += '<td>' + Utils.escapeHtml(q.title) + '</td>';
-            html += '<td>' + Utils.escapeHtml(self.findCollegeNameById(q.college_id)) + '</td>';
-            html += '<td>' + Utils.escapeHtml(self.findDepartmentNameById(q.department_id)) + '</td>';
-            html += '<td>' + Utils.escapeHtml(self.findBatchNameById(q.batch_id)) + '</td>';
-            html += '<td>' + Utils.escapeHtml(self.findTopicNameById(q.topic_id) || q.topic_name || 'N/A') + '</td>';
+            html += '<td>' + Utils.escapeHtml(q.college_name || self.findCollegeNameById(q.college_id)) + '</td>';
+            html += '<td>' + Utils.escapeHtml(q.department_name || self.findDepartmentNameById(q.department_id)) + '</td>';
+            html += '<td>' + Utils.escapeHtml(q.batch_name || self.findBatchNameById(q.batch_id)) + '</td>';
+            html += '<td>' + Utils.escapeHtml(q.topic_name || self.findTopicNameById(q.topic_id) || 'N/A') + '</td>';
             html += '<td><span class="badge badge-info">' + Utils.escapeHtml(q.difficulty || 'Medium') + '</span></td>';
             if (canManage) {
                 html += '<td class="flex-gap">';

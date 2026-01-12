@@ -5,7 +5,12 @@
 const Config = {
     // Environment URLs
     // Default to deployed backend
+<<<<<<< HEAD
     // API_BASE: 'https://codeprac2.onrender.com/api',
+=======
+    API_BASE: 'https://codeprac2.onrender.com/api',
+    // PASSWORD_RESET_URL: 'https://mohammed-aswath.github.io/CodePrac2/password-reset.html',
+>>>>>>> b9ae754f9054eba0e968fb0e1f113a8862b8fb5d
     API_BASE: 'http://localhost:5000/api', // Uncomment for local development
 
     API_BASE_URL: 'https://codeprac2.onrender.com/api', // Alias for compatibility

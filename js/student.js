@@ -60,8 +60,9 @@ const StudentPractice = {
             }
 
             // Hierarchy complete - load topics and notes
-            await this.loadTopics();
-            await this.loadNotes();
+            this.loadTopics(); // Async but we don't block
+            this.loadNotes();
+            this.fetchProfile(); // Fetch names for header
             this.showPhase('topics');
 
             // Handle window resize for Monaco
@@ -71,6 +72,28 @@ const StudentPractice = {
         } catch (error) {
             console.error('Student practice load error:', error);
             Utils.showMessage('practiceMessage', 'Failed to load practice topics', 'error');
+        }
+    },
+
+    /**
+     * Fetch student profile to get resolved names
+     */
+    async fetchProfile() {
+        try {
+            const response = await fetch(`${CONFIG.API_BASE_URL}/student/profile`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                const student = data.data?.student || data.student;
+                if (student) {
+                    if (student.college_name) document.getElementById('collegeDisplay').textContent = student.college_name;
+                    if (student.department_name) document.getElementById('departmentDisplay').textContent = student.department_name;
+                    if (student.batch_name) document.getElementById('batchDisplay').textContent = student.batch_name;
+                }
+            }
+        } catch (e) {
+            console.warn('Failed to fetch profile names', e);
         }
     },
 
