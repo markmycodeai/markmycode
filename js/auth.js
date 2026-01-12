@@ -79,11 +79,8 @@ const Auth = {
     },
 
     /**
-<<<<<<< HEAD
+    /**
      * Request Password Reset
-=======
-     * Request password reset email
->>>>>>> b9ae754f9054eba0e968fb0e1f113a8862b8fb5d
      */
     async requestPasswordReset(email) {
         try {
@@ -91,35 +88,11 @@ const Auth = {
                 method: 'POST',
                 body: JSON.stringify({ email })
             });
-<<<<<<< HEAD
-=======
 
->>>>>>> b9ae754f9054eba0e968fb0e1f113a8862b8fb5d
             return response;
         } catch (error) {
             console.error('Password reset request failed:', error);
             throw error;
         }
-<<<<<<< HEAD
-=======
-    },
-
-    /**
-     * Verify password reset code (called from password-reset.html)
-     * This is handled client-side in the password-reset.html page
-     */
-    async verifyResetCode(auth, actionCode) {
-        // This is implemented in password-reset.html using Firebase SDK
-        console.log('Reset code verification handled in password-reset.html');
-    },
-
-    /**
-     * Confirm password reset (called from password-reset.html)
-     * This is handled client-side in the password-reset.html page
-     */
-    async confirmPasswordReset(auth, actionCode, newPassword) {
-        // This is implemented in password-reset.html using Firebase SDK
-        console.log('Password reset confirmation handled in password-reset.html');
->>>>>>> b9ae754f9054eba0e968fb0e1f113a8862b8fb5d
     }
 };

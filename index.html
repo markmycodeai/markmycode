@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CODEPRAC 2.0 - Competitive Programming Practice Platform</title>
+    <title>MarkMyCode - Competitive Programming Practice Platform</title>
     <!-- Google Fonts: Inter & JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <!-- add the logo -->
@@ -25,7 +25,7 @@
     <!-- Navigation -->
     <nav>
         <div class="container">
-            <div class="nav-brand">CODEPRAC 2.0</div>
+            <div class="nav-brand">MarkMyCode</div>
             <ul class="nav-links">
                 <li id="dashboardLink" class="hidden"><a href="#" data-nav="dashboard">Dashboard</a></li>
                 <li id="adminLink" class="hidden"><a href="#" data-nav="admin">Admin Panel</a></li>
@@ -76,7 +76,7 @@
                 <div class="mb-8 text-center" style="margin-bottom: 2rem; text-align: center;">
                     <h2 class="nexus-title">
                         <span class="nexus-title-glow"></span>
-                        <span style="position: relative;">CODEPRAC 2.0</span>
+                        <span style="position: relative;">MarkMyCode</span>
                     </h2>
                     <div class="nexus-subtitle">
                         <span class="nexus-subtitle-text">Master Data Structures & Algorithms</span>
@@ -133,15 +133,11 @@
                             </div>
                             <label for="rememberMe" class="nexus-label">Remember me</label>
                         </div>
-<<<<<<< HEAD
                         <button type="button" class="nexus-link"
                             style="background: none; border: none; padding: 0; font: inherit; cursor: pointer;"
                             onclick="document.getElementById('passwordResetModal').classList.add('active'); document.getElementById('passwordResetModal').style.display = 'flex';">
                             Forgot password?
                         </button>
-=======
-                        <a href="#" class="nexus-link" onclick="document.getElementById('loginForm').classList.add('hidden'); document.getElementById('forgotPasswordForm').classList.remove('hidden'); return false;">Forgot password?</a>
->>>>>>> b9ae754f9054eba0e968fb0e1f113a8862b8fb5d
                     </div>
 
                     <!-- Submit -->
@@ -164,7 +160,7 @@
             <!-- Register Form (Simple Inheritance) -->
             <div id="registerForm" class="hidden">
                 <div class="mb-8 text-center" style="margin-bottom: 2rem; text-align: center;">
-                    <h2 class="nexus-title">Join CODEPRAC</h2>
+                    <h2 class="nexus-title">Join MarkMyCode</h2>
                     <p class="nexus-subtitle-text" style="color: rgba(255,255,255,0.8);">Commit to your future</p>
                 </div>
 
@@ -204,7 +200,8 @@
             <div id="forgotPasswordForm" class="hidden">
                 <div class="mb-8 text-center" style="margin-bottom: 2rem; text-align: center;">
                     <h2 class="nexus-title">Reset Password</h2>
-                    <p class="nexus-subtitle-text" style="color: rgba(255,255,255,0.8);">Enter your email to receive reset instructions</p>
+                    <p class="nexus-subtitle-text" style="color: rgba(255,255,255,0.8);">Enter your email to receive
+                        reset instructions</p>
                 </div>
 
                 <div class="space-y-6">
@@ -227,18 +224,23 @@
                     </button>
 
                     <!-- Loading State -->
-                    <div id="forgotLoadingState" class="hidden" style="text-align: center; color: rgba(255,255,255,0.7);">
+                    <div id="forgotLoadingState" class="hidden"
+                        style="text-align: center; color: rgba(255,255,255,0.7);">
                         <p style="font-size: 0.875rem;">Sending reset link to your email...</p>
                     </div>
 
                     <!-- Success Message -->
-                    <div id="forgotSuccessMessage" class="hidden" style="background: rgba(34, 197, 94, 0.1); border: 1px solid #22c55e; border-radius: 0.5rem; padding: 1rem; text-align: center; color: #86efac;">
+                    <div id="forgotSuccessMessage" class="hidden"
+                        style="background: rgba(34, 197, 94, 0.1); border: 1px solid #22c55e; border-radius: 0.5rem; padding: 1rem; text-align: center; color: #86efac;">
                         <p style="font-weight: 500;">Check your email!</p>
-                        <p style="font-size: 0.875rem; margin-top: 0.5rem;">We've sent a password reset link to your email address.</p>
+                        <p style="font-size: 0.875rem; margin-top: 0.5rem;">We've sent a password reset link to your
+                            email address.</p>
                     </div>
 
                     <!-- Error Message -->
-                    <div id="forgotErrorMessage" class="hidden" style="background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 0.5rem; padding: 1rem; text-align: center; color: #fca5a5;"></div>
+                    <div id="forgotErrorMessage" class="hidden"
+                        style="background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 0.5rem; padding: 1rem; text-align: center; color: #fca5a5;">
+                    </div>
                 </div>
 
                 <p style="text-align: center; margin-top: 2rem;">
