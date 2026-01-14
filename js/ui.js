@@ -368,6 +368,11 @@ const UI = {
             const response = await Auth.requestPasswordReset(email);
             console.log('[Forgot Password] Backend response:', response);
 
+            // strictly check for success status as requested
+            if (response.error) {
+                throw new Error(response.message || 'Failed to complete reset request');
+            }
+
             // Hide loading and show success
             loadingBox.classList.add('hidden');
             const successBox = document.getElementById('forgotSuccessMessage');
