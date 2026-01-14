@@ -221,7 +221,9 @@ def request_password_reset():
 
     
     except Exception as e:
-        print(f"Password reset error: {e}")
+        # Log the attempt
+        print(f"Sending password reset request to {url} for {data['email']}", flush=True)
+        print(f"Password reset error: {e}", flush=True)
         import traceback
         traceback.print_exc()
         return jsonify({

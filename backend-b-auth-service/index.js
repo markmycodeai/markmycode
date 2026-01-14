@@ -4,6 +4,10 @@ const cors = require('cors');
 const { initializeApp } = require('firebase/app');
 const { getAuth, sendPasswordResetEmail } = require('firebase/auth');
 
+// Production logging helper
+const log = (msg) => console.log(`[${new Date().toISOString()}] ${msg}`);
+const logError = (msg, err) => console.error(`[${new Date().toISOString()}] ERROR: ${msg}`, err);
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -44,10 +48,10 @@ app.post('/api/trigger-reset', authenticateService, async (req, res) => {
     try {
         // This uses the Client SDK to trigger the email
         await sendPasswordResetEmail(auth, email);
-        console.log(`Password reset email sent to: ${email}`);
+        log(`Password reset email sent to: ${email}`);
         return res.status(200).json({ status: 'sent', provider: 'firebase' });
     } catch (error) {
-        console.error('Error sending password reset email:', error);
+        logError('Error sending password reset email:', error);
         let statusCode = 500;
         let errorCode = 'INTERNAL_ERROR';
 
@@ -69,5 +73,5 @@ app.post('/api/trigger-reset', authenticateService, async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Backend B (Auth Service) listening on port ${PORT}`);
+    log(`Backend B (Auth Service) listening on port ${PORT}`);
 });
