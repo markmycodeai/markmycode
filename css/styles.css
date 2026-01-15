@@ -118,7 +118,7 @@ nav .container {
 
 .btn-primary {
     background: var(--primary-600);
-    color: white;
+    color: var(--text-main);
     box-shadow: 0 4px 12px rgba(234, 179, 8, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -143,12 +143,25 @@ nav .container {
 
 .btn-success {
     background: var(--success);
-    color: white;
+    color: var(--text-main);
 }
 
 .btn-danger {
     background: var(--error);
-    color: white;
+    color: var(--text-main);
+}
+
+.btn-warning {
+    background: var(--warning);
+    color: var(--text-main);
+}
+
+.btn-info {
+    background: var(--accent-cyan);
+    /* Using design system accent */
+    color: var(--bg-app);
+    /* Cyan is usually bright, so dark text is better for contrast, OR if the user strictly wants light text in dark mode, use --text-main. User asked: "converts to light color... when in dark mode". var(--text-main) is light in dark mode. */
+    color: var(--text-main);
 }
 
 .btn-sm {
@@ -739,7 +752,7 @@ tr:hover td {
    ---------------------------------------------------- */
 .admin-questions-grid {
     display: grid;
-    grid-template-columns: minmax(300px, 20%) minmax(450px, 40%) minmax(400px, 40%);
+    grid-template-columns: 280px 1fr 1fr;
     /* Optimized fractions for wide screens */
     gap: 1.5rem;
     height: calc(100vh - 200px);
@@ -778,9 +791,9 @@ tr:hover td {
 }
 
 /* Responsive adjustment */
-@media (max-width: 1400px) {
+@media (max-width: 1100px) {
     .admin-questions-grid {
-        grid-template-columns: 300px 1fr;
+        grid-template-columns: 280px 1fr;
         grid-template-rows: 1fr 1fr;
     }
 

@@ -221,6 +221,12 @@
     border-radius: 4px;
 }
 
+[data-theme="light"] .nexus-link {
+    color: #4b5563;
+    /* Dark Grey for Light Mode visibility */
+    font-weight: 500;
+}
+
 .nexus-link:hover {
     color: var(--primary-500);
     text-decoration-color: var(--primary-500);

@@ -93,15 +93,12 @@ const Batch = {
      * Load questions for this batch
      */
     async loadQuestions() {
-        Utils.showLoading('batchQuestionsList');
-        try {
-            const response = await Utils.apiRequest('/batch/questions');
-            this.questions = response.data?.questions || response.questions || [];
-            this.renderQuestions();
-        } catch (error) {
-            console.error('Load questions error:', error);
-            Utils.showError('batchQuestionsList', 'Failed to load questions. ' + error.message, () => this.loadQuestions());
-            Utils.showMessage('batchMessage', 'Failed to load questions', 'error');
+        // Delegate to shared Questions module for Admin-like layout
+        if (typeof Questions !== 'undefined') {
+            Questions.configure('batch');
+            await Questions.load();
+        } else {
+            console.error('Questions module not found');
         }
     },
 
@@ -139,7 +136,7 @@ const Batch = {
             }
                             </td>
                             <td class="flex-gap">
-                                <button class="btn btn-sm btn-secondary" onclick="Batch.editStudent('${s.id}')">Edit</button>
+                                <button class="btn btn-sm btn-info" onclick="Batch.editStudent('${s.id}')">Edit</button>
                                 <button class="btn btn-sm btn-${s.is_active ? 'warning' : 'success'}" 
                                     onclick="Batch.toggleStudent('${s.id}')">
                                     ${s.is_active ? 'Disable' : 'Enable'}

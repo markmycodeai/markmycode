@@ -81,51 +81,62 @@
    LIGHT MODE OVERRIDES
    ---------------------------------------------------- */
 [data-theme="light"] {
-   /* Bright/Crisp Warm Foundation */
-   --bg-app: #fffbeb;
-   /* Amber 50 (Very Pale Cream) */
-   --bg-surface: #ffffff;
-   /* White */
-   --bg-elevated: #fef3c7;
-   /* Amber 100 */
-   --bg-glass: rgba(255, 255, 255, 0.75);
+   /* New Royal Gold Theme */
+   --bg-app: #fdf8e1;
+   /* Cornsilk */
+   --bg-surface: #fcefb4;
+   /* Vanilla Custard */
+   --bg-elevated: #fae588;
+   /* Jasmine */
+   --bg-glass: rgba(240, 226, 160, 0.95);
+   /* Darker Gold-ish Glass for Header */
 
    /* Borders (Darker for Contrast) */
-   --border-subtle: rgba(120, 53, 15, 0.1);
-   /* Brown tint */
-   --border-strong: rgba(120, 53, 15, 0.2);
-   --border-highlight: rgba(234, 179, 8, 0.6);
+   --border-subtle: rgba(180, 83, 9, 0.15);
+   --border-strong: rgba(180, 83, 9, 0.3);
+   --border-highlight: #f9dc5c;
 
-   /* Text (Sharp/Dark) */
-   --text-main: #292524;
-   /* Stone 800 */
-   --text-body: #44403c;
-   /* Stone 700 */
-   --text-muted: #78716c;
-   /* Stone 500 */
-   --text-faint: #a8a29e;
-   /* Stone 400 */
-   --text-code: #44403c;
+   /* Text (Sharp/Dark for readability on yellow) */
+   --text-main: #3a320a;
+   /* Dark Brown/Black */
+   --text-body: #5c520e;
+   /* Archive Drab */
+   --text-muted: #857f50;
+   --text-faint: #a6a180;
+   --text-code: #3a320a;
 
-   /* Brand Primary (adjusted for Light BG) */
+   /* Brand Primary */
    --primary-500: #d97706;
-   /* Amber 600 (Darker for contrast on white) */
+   /* Keep strong amber for text/buttons to contrast with yellow bg */
    --primary-600: #b45309;
-   /* Amber 700 */
-   --primary-glow: 0 0 20px rgba(217, 119, 6, 0.2);
 
-   /* Shadows (Softer) */
-   --shadow-sm: 0 1px 2px rgba(120, 53, 15, 0.05);
-   --shadow-md: 0 4px 6px -1px rgba(120, 53, 15, 0.1), 0 2px 4px -2px rgba(120, 53, 15, 0.05);
-   --shadow-glow: 0 0 15px rgba(217, 119, 6, 0.15);
+   /* Note: User asked to set roots to specific hexes.
+      --royal-gold: #f9dc5cff;
+      --jasmine: #fae588ff;
+      --vanilla-custard: #fcefb4ff;
+      --cornsilk: #fdf8e1ff;
+      
+      But standard elements rely on --primary-500 etc.
+      I will map the user's specific colors to the background structure 
+      and use a strong amber for the primary actions to ensure they are visible on the yellow backgrounds.
+   */
+
+   --primary-glow: 0 0 20px rgba(249, 220, 92, 0.4);
+
+   /* Shadows */
+   --shadow-sm: 0 1px 2px rgba(92, 82, 14, 0.05);
+   --shadow-md: 0 4px 6px -1px rgba(92, 82, 14, 0.1), 0 2px 4px -2px rgba(92, 82, 14, 0.05);
+   --shadow-glow: 0 0 15px rgba(249, 220, 92, 0.3);
 
    /* Nexus Login Specifics (Light) */
-   --nexus-gradient-1: #fffbeb;
-   --nexus-gradient-2: #fcd34d;
-   --nexus-gradient-3: #f59e0b;
-   --nexus-glass: rgba(255, 255, 255, 0.4);
-   --nexus-text-glow: rgba(217, 119, 6, 0.3);
-   --nexus-border: rgba(120, 53, 15, 0.1);
+   --nexus-gradient-1: #fdf8e1;
+   --nexus-gradient-2: #fae588;
+   --nexus-gradient-3: #f9dc5c;
+   --nexus-glass: rgba(240, 226, 160, 0.55);
+   /* Darker/Richer Gold Glass for Card */
+   --nexus-text-glow: rgba(180, 83, 9, 0.3);
+   --nexus-border: rgba(180, 83, 9, 0.25);
+   /* Slightly stronger border */
 }
 
 /* Light mode configuration reserved for future update */

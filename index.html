@@ -124,15 +124,7 @@
 
                     <!-- Actions -->
                     <div class="nexus-actions">
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <div class="nexus-toggle" onclick="this.querySelector('input').click()">
-                                <input type="checkbox" id="rememberMe">
-                                <div class="nexus-toggle-track">
-                                    <div class="nexus-toggle-thumb"></div>
-                                </div>
-                            </div>
-                            <label for="rememberMe" class="nexus-label">Remember me</label>
-                        </div>
+
                         <button type="button" class="nexus-link"
                             style="background: none; border: none; padding: 0; font: inherit; cursor: pointer;"
                             onclick="document.getElementById('passwordResetModal').classList.add('active'); document.getElementById('passwordResetModal').style.display = 'flex';">
@@ -450,16 +442,14 @@
                     </div>
 
                     <!-- Questions -->
+                    <!-- Questions -->
                     <div data-batch-content="questions" style="display: none;">
-                        <div class="admin-questions-grid"
-                            style="grid-template-columns: minmax(300px, 20%) minmax(450px, 40%) minmax(400px, 40%); height: calc(100vh - 200px);">
+                        <div class="admin-questions-grid">
                             <!-- Column 1: List -->
                             <div class="admin-panel" id="batchQuestionsListPanel">
-                                <div class="admin-panel-header">
-                                    <h3>Questions</h3>
-                                    <button class="btn btn-sm btn-primary" onclick="Questions.prepareCreate()">+
-                                        New</button>
-                                </div>
+                                <h3 class="admin-panel-header">Questions</h3>
+                                <button class="btn btn-primary" onclick="Questions.prepareCreate()"
+                                    style="width: 100%; margin-bottom: 1rem;">+ Add Question</button>
                                 <div id="batchQuestionsList" class="admin-panel-content">
                                     <!-- Questions List Loaded Here -->
                                 </div>
@@ -467,6 +457,7 @@
 
                             <!-- Column 2: Edit Form -->
                             <div class="admin-panel" id="batchQEditPanel">
+                                <h3 class="admin-panel-header">Edit Question</h3>
                                 <div class="admin-panel-content" id="batchQEditForm">
                                     <div class="text-center text-muted" style="padding: 2rem;">Select a question to edit
                                     </div>
@@ -475,6 +466,7 @@
 
                             <!-- Column 3: Details / Test Cases -->
                             <div class="admin-panel" id="batchQDetailsPanel">
+                                <h3 class="admin-panel-header">Details & Test Cases</h3>
                                 <div class="admin-panel-content" id="batchQDetailsContent">
                                     <div class="text-center text-muted" style="padding: 2rem;">Select a question to view
                                         details</div>
