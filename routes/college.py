@@ -1,5 +1,6 @@
 """College API routes."""
 from flask import Blueprint, request, jsonify
+from firebase_init import get_auth, db
 from auth import require_auth, get_token_from_request, decode_jwt_token, disable_user_firebase, enable_user_firebase, register_user_firebase
 from models import DepartmentModel, BatchModel, StudentModel, PerformanceModel, QuestionModel, TopicModel
 from question_service import QuestionService
@@ -116,7 +117,41 @@ def update_department_college(dept_id):
             return error_response("INVALID_EMAIL", "Invalid email format")
         update_data["email"] = data["email"]
 
-    DepartmentModel().update(dept_id, update_data)
+    password = data.get("password")
+    if password:
+        if len(password) < 6:
+            return error_response("INVALID_PASSWORD", "Password must be at least 6 characters")
+
+    if update_data:
+        DepartmentModel().update(dept_id, update_data)
+        
+    # Sync with Firebase
+    firebase_uid = dept.get("firebase_uid")
+    if firebase_uid:
+        try:
+            auth_updates = {}
+            firestore_updates = {}
+            
+            if "email" in update_data:
+                auth_updates["email"] = update_data["email"]
+                firestore_updates["email"] = update_data["email"]
+                
+            if "name" in update_data:
+                auth_updates["display_name"] = update_data["name"]
+                firestore_updates["name"] = update_data["name"]
+                
+            if password:
+                auth_updates["password"] = password
+            
+            if auth_updates:
+                get_auth().update_user(firebase_uid, **auth_updates)
+                
+            if firestore_updates:
+                db.collection("User").document(firebase_uid).set(firestore_updates, merge=True)
+                
+        except Exception as e:
+            print(f"Warning: Failed to sync department update to Firebase: {e}")
+
     audit_log(request.user.get("uid"), "update_department", "department", dept_id, update_data)
     return success_response(None, "Department updated")
 
@@ -260,8 +295,42 @@ def update_batch_college(batch_id):
         if not validate_email(data["email"]):
             return error_response("INVALID_EMAIL", "Invalid email format")
         update_data["email"] = data["email"]
+        
+    password = data.get("password")
+    if password:
+        if len(password) < 6:
+            return error_response("INVALID_PASSWORD", "Password must be at least 6 characters")
 
-    BatchModel().update(batch_id, update_data)
+    if update_data:
+        BatchModel().update(batch_id, update_data)
+        
+    # Sync with Firebase
+    firebase_uid = batch.get("firebase_uid")
+    if firebase_uid:
+        try:
+            auth_updates = {}
+            firestore_updates = {}
+            
+            if "email" in update_data:
+                auth_updates["email"] = update_data["email"]
+                firestore_updates["email"] = update_data["email"]
+                
+            if "batch_name" in update_data:
+                auth_updates["display_name"] = update_data["batch_name"]
+                firestore_updates["name"] = update_data["batch_name"]
+                
+            if password:
+                auth_updates["password"] = password
+            
+            if auth_updates:
+                get_auth().update_user(firebase_uid, **auth_updates)
+                
+            if firestore_updates:
+                db.collection("User").document(firebase_uid).set(firestore_updates, merge=True)
+        
+        except Exception as e:
+            print(f"Warning: Failed to sync batch update to Firebase: {e}")
+
     audit_log(request.user.get("uid"), "update_batch", "batch", batch_id, update_data)
     return success_response(None, "Batch updated")
 
@@ -394,6 +463,20 @@ def get_student_college(student_id):
     if not student or student.get("college_id") != request.user.get("college_id"):
         return error_response("NOT_FOUND", "Student not found", status_code=404)
     student.pop("firebase_uid", None)
+    
+    # Resolve hierarchy names
+    try:
+        from models import CollegeModel, DepartmentModel, BatchModel
+        college = CollegeModel().get(student.get("college_id"))
+        dept = DepartmentModel().get(student.get("department_id"))
+        batch = BatchModel().get(student.get("batch_id"))
+        
+        student["college_name"] = college.get("name") if college else "Unknown"
+        student["department_name"] = dept.get("name") if dept else "Unknown"
+        student["batch_name"] = batch.get("batch_name") if batch else "Unknown"
+    except Exception:
+        pass
+
     return success_response({"student": student})
 
 
@@ -414,16 +497,43 @@ def update_student_college(student_id):
         if not validate_email(data["email"]):
             return error_response("INVALID_EMAIL", "Invalid email format")
         update_data["email"] = data["email"]
+        
+    password = data.get("password")
+    if password:
+        if len(password) < 6:
+            return error_response("INVALID_PASSWORD", "Password must be at least 6 characters")
 
     if update_data:
         StudentModel().update(student_id, update_data)
-        if "email" in update_data and student.get("firebase_uid"):
-            try:
-                from firebase_init import get_auth as _get_auth
-                _get_auth().update_user(student.get("firebase_uid"), email=update_data["email"])
-            except Exception:
-                pass
-        audit_log(request.user.get("uid"), "update_student", "student", student_id, update_data)
+        
+    # Sync with Firebase
+    firebase_uid = student.get("firebase_uid")
+    if firebase_uid:
+        try:
+            auth_updates = {}
+            firestore_updates = {}
+            
+            if "email" in update_data:
+                auth_updates["email"] = update_data["email"]
+                firestore_updates["email"] = update_data["email"]
+                
+            if "username" in update_data:
+                auth_updates["display_name"] = update_data["username"]
+                firestore_updates["name"] = update_data["username"]
+                
+            if password:
+                auth_updates["password"] = password
+            
+            if auth_updates:
+                get_auth().update_user(firebase_uid, **auth_updates)
+                
+            if firestore_updates:
+                db.collection("User").document(firebase_uid).set(firestore_updates, merge=True)
+                
+        except Exception as e:
+            print(f"Warning: Failed to sync student update to Firebase: {e}")
+
+    audit_log(request.user.get("uid"), "update_student", "student", student_id, update_data)
 
     return success_response(None, "Student updated")
 

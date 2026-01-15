@@ -208,10 +208,15 @@ const Batch = {
             const response = await Utils.apiRequest(`/batch/students/${id}`);
             const student = response.data?.student || response.student || {};
 
-            document.getElementById('batchStudentName').value = student.name || '';
+            document.getElementById('batchStudentName').value = student.name || student.username || '';
             document.getElementById('batchStudentEmail').value = student.email || '';
-            document.getElementById('batchStudentPassword').style.display = 'none';
-            document.getElementById('batchStudentPassword').required = false;
+
+            // Allow password update
+            const pwInput = document.getElementById('batchStudentPassword');
+            pwInput.style.display = 'block';
+            pwInput.required = false;
+            pwInput.value = '';
+            pwInput.placeholder = 'Enter new password to change (optional)';
 
             this.editingStudentId = id;
             document.querySelector('#batchStudentModal .modal-header h3').textContent = 'Edit Student';
@@ -243,6 +248,9 @@ const Batch = {
             if (this.editingStudentId) {
                 url += `/${this.editingStudentId}`;
                 method = 'PUT';
+                if (password) {
+                    body.password = password;
+                }
             } else {
                 if (!password) {
                     Utils.showMessage('batchStudentsMessage', 'Password is required for new students', 'error');

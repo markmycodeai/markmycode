@@ -1,9 +1,4 @@
 
-
-
-
-
-
 """Admin API routes."""
 from flask import Blueprint, request, jsonify
 from auth import require_auth, register_user_firebase, disable_user_firebase, enable_user_firebase, get_token_from_request, decode_jwt_token

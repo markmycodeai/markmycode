@@ -1,5 +1,6 @@
 """Batch API routes."""
 from flask import Blueprint, request, jsonify
+from firebase_init import get_auth, db
 from auth import require_auth, register_user_firebase, disable_user_firebase, enable_user_firebase, get_token_from_request, decode_jwt_token
 from models import StudentModel, BatchModel, QuestionModel, TopicModel, NoteModel, PerformanceModel
 from question_service import QuestionService
@@ -129,6 +130,20 @@ def get_student(student_id):
             return error_response("FORBIDDEN", "Student does not belong to your batch", status_code=403)
         
         student.pop("firebase_uid", None)
+
+        # Resolve hierarchy names
+        try:
+            from models import CollegeModel, DepartmentModel
+            college = CollegeModel().get(student.get("college_id"))
+            dept = DepartmentModel().get(student.get("department_id"))
+            batch = BatchModel().get(student.get("batch_id"))
+            
+            student["college_name"] = college.get("name") if college else "Unknown"
+            student["department_name"] = dept.get("name") if dept else "Unknown"
+            student["batch_name"] = batch.get("batch_name") if batch else "Unknown"
+        except Exception:
+            pass
+
         return success_response({"student": student})
     except Exception as e:
         return error_response("QUERY_ERROR", str(e), status_code=500)
@@ -152,13 +167,50 @@ def update_student(student_id):
         update_data = {}
         
         if "name" in data:
-            update_data["name"] = data["name"]
+            update_data["username"] = data["name"] # Mapped to username
+        if "username" in data:
+            update_data["username"] = data["username"]
+
         if "email" in data:
             if not validate_email(data["email"]):
                 return error_response("INVALID_EMAIL", "Invalid email format")
             update_data["email"] = data["email"]
+            
+        password = data.get("password")
+        if password:
+            if len(password) < 6:
+                return error_response("INVALID_PASSWORD", "Password must be at least 6 characters")
         
-        StudentModel().update(student_id, update_data)
+        if update_data:
+            StudentModel().update(student_id, update_data)
+            
+        # Sync with Firebase
+        firebase_uid = student.get("firebase_uid")
+        if firebase_uid:
+            try:
+                auth_updates = {}
+                firestore_updates = {}
+                
+                if "email" in update_data:
+                    auth_updates["email"] = update_data["email"]
+                    firestore_updates["email"] = update_data["email"]
+                    
+                if "username" in update_data:
+                    auth_updates["display_name"] = update_data["username"]
+                    firestore_updates["name"] = update_data["username"]
+                    
+                if password:
+                    auth_updates["password"] = password
+                
+                if auth_updates:
+                    get_auth().update_user(firebase_uid, **auth_updates)
+                    
+                if firestore_updates:
+                    db.collection("User").document(firebase_uid).set(firestore_updates, merge=True)
+                    
+            except Exception as e:
+                print(f"Warning: Failed to sync student update to Firebase: {e}")
+        
         audit_log(request.user.get("uid"), "update_student", "student", student_id, update_data)
         
         return success_response(None, "Student updated")

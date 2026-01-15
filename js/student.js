@@ -486,6 +486,9 @@ const StudentPractice = {
                     fontSize: 14,
                     scrollBeyondLastLine: false,
                     roundedSelection: false,
+                    scrollbar: {
+                        alwaysConsumeMouseWheel: false
+                    },
                 });
 
                 this.monacoInstance.onDidChangeModelContent(() => {
@@ -1167,11 +1170,9 @@ int main() {
         this.selectedQuestion = null;
         this.code = '';
         this.results = null;
-        document.getElementById('problemSection').style.display = 'none';
-        document.getElementById('editorSection').style.display = 'none';
-        document.getElementById('resultsSection').style.display = 'none';
         this.showPhase('questions');
     },
+
 
     /**
      * Navigate back to topics from questions
@@ -1183,9 +1184,6 @@ int main() {
         this.code = '';
         this.results = null;
         this.renderQuestions();
-        document.getElementById('problemSection').style.display = 'none';
-        document.getElementById('editorSection').style.display = 'none';
-        document.getElementById('resultsSection').style.display = 'none';
         this.showPhase('topics');
     },
 
