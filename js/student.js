@@ -191,6 +191,33 @@ const StudentPractice = {
     },
 
     /**
+     * Get a deterministic icon based on a seed string (e.g. Note ID/Title)
+     * Returns varied icons: Book, File, Folder, Clipboard, Archive
+     */
+    getNoteIcon(seed) {
+        // SVG Icons (24x24, consistent stroke)
+        const icons = [
+            // Book
+            `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>`,
+            // File Text
+            `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`,
+            // Folder
+            `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>`,
+            // Clipboard
+            `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>`,
+            // Archive / Box
+            `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>`
+        ];
+
+        let hash = 0;
+        const str = String(seed || 'default');
+        for (let i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return icons[Math.abs(hash) % icons.length];
+    },
+
+    /**
      * Render notes in notes section
      */
     renderNotes() {
@@ -210,12 +237,12 @@ const StudentPractice = {
                     <div class="card" style="padding: 1.5rem; border: 1px solid var(--border-subtle); border-radius: 8px; background: var(--bg-surface); transition: transform 0.2s, box-shadow 0.2s; box-shadow: var(--shadow-sm);">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
                             <div style="width: 40px; height: 40px; background: rgba(99, 102, 241, 0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--primary-500);">
-                                <i class="fas fa-book"></i>
+                                ${this.getNoteIcon(note.id || note.title)}
                             </div>
                         </div>
-                        <h4 style="margin: 0 0 0.5rem 0; color: var(--text-main); font-size: 1.1rem;">${this.escapeHtml(note.title)}</h4>
+                        <h4 style="margin: 0 0 0.5rem 0; color: var(--text-main); font-size: 1.1rem;">${Utils.escapeHtml(note.title)}</h4>
                         <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted); margin-top: auto;">
-                            ${note.drive_link ? `<a href="${this.escapeHtml(note.drive_link)}" target="_blank" class="btn btn-sm btn-outline" style="width: 100%; display: block; text-align: center;">Open Resource</a>` : '<span style="color: var(--text-subtle);">No link provided</span>'}
+                            ${note.drive_link ? `<a href="${Utils.escapeHtml(note.drive_link)}" target="_blank" class="btn btn-sm btn-outline" style="width: 100%; display: block; text-align: center;">Open Resource</a>` : '<span style="color: var(--text-subtle);">No link provided</span>'}
                         </p>
                     </div>
                 `).join('')}
