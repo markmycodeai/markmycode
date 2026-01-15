@@ -25,6 +25,13 @@ const Dashboard = {
         try {
             const user = Auth.getCurrentUser();
 
+            // Custom Welcome Message
+            const title = document.querySelector('#dashboardPage h1');
+            if (title) {
+                const displayName = user.name || user.username || (user.email ? user.email.split('@')[0] : 'User');
+                title.textContent = `Welcome ${displayName}!`;
+            }
+
             // Clear previous content
             const content = document.getElementById('dashboardContent');
             if (content) content.innerHTML = '<div class="nexus-loader" style="position:static; margin: 2rem auto;"><div class="nexus-spinner-container"><div class="nexus-spinner-ring"></div></div></div>';
