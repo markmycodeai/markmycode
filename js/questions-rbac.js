@@ -455,7 +455,8 @@ const Questions = {
         const targetContainer = document.getElementById(contentId) || container;
 
         const topicName = this.findTopicNameById(question.topic_id);
-        const hiddenTestcases = question.hidden_testcases || [];
+        const hiddenTestcases = Array.isArray(question.hidden_testcases) ? question.hidden_testcases : [];
+        const hiddenCount = hiddenTestcases.length || 0;
         const self = this;
 
         let html = '<div style="padding: 0; background: var(--bg-surface); border-radius: 4px; max-height: 600px; overflow-y: auto;">';
@@ -470,13 +471,13 @@ const Questions = {
         // Open Test Cases (Sample Input/Output)
         html += '<div style="border-top: 1px solid var(--border-subtle); padding: 1rem;"><h5 style="margin: 0 0 0.75rem 0; color: var(--text-muted); font-size: 0.9rem;">Open Test Case (Sample):</h5>';
         html += '<div class="generated-test-case-box" style="padding: 0.75rem; border-radius: 4px; font-size: 0.85rem;">';
-        html += '<div style="margin-bottom: 0.5rem;"><strong>Input:</strong><br>' + Utils.escapeHtml(question.sample_input) + '</div>';
-        html += '<div><strong>Output:</strong><br>' + Utils.escapeHtml(question.sample_output) + '</div></div></div>';
+        html += '<div style="margin-bottom: 0.5rem;"><strong>Input:</strong><br>' + Utils.escapeHtml(question.sample_input || '') + '</div>';
+        html += '<div><strong>Output:</strong><br>' + Utils.escapeHtml(question.sample_output || '') + '</div></div></div>';
 
         // Hidden Test Cases
         html += '<div style="border-top: 1px solid var(--border-subtle); padding: 1rem;">';
         html += '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">';
-        html += '<h5 style="margin: 0; color: var(--success); font-size: 0.9rem;">Hidden Test Cases (' + hiddenTestcases.length + ')</h5>';
+        html += '<h5 style="margin: 0; color: var(--success); font-size: 0.9rem;">Hidden Test Cases (' + hiddenCount + ')</h5>';
         html += '<button id="' + prefix + 'QAddTest" class="btn btn-sm btn-primary" style="font-size: 0.85rem;">+ Add</button>';
         html += '</div>';
 
@@ -1024,7 +1025,7 @@ const Questions = {
         if (headerEl) headerEl.textContent = 'Add Question';
 
         const saveBtn = document.querySelector('#questionModal button[onclick="Questions.save()"]');
-        if (saveBtn) saveBtn.textContent = 'Create Question';
+        if (saveBtn) saveBtn.textContent = 'Create Question(s)';
 
         // hierarchy Logic
         const user = Auth.getCurrentUser();
@@ -1035,13 +1036,21 @@ const Questions = {
             if (hierarchyStep) hierarchyStep.style.display = 'block';
             if (detailsStep) detailsStep.style.display = 'none';
 
-            // Ensure data is loaded
-            await this.loadHierarchyData();
-
-            this.populateColleges();
-            this.resetSelect('questionDepartment', 'Department');
-            this.resetSelect('questionBatch', 'Batch');
-            this.resetSelect('questionTopic', 'Topic');
+            // Initialize multi-select hierarchy for admin
+            MultiSelectHierarchy.init({
+                collegesContainerId: 'questionCollegesContainer',
+                departmentsContainerId: 'questionDepartmentsContainer',
+                batchesContainerId: 'questionBatchesContainer',
+                topicsContainerId: 'questionTopicsContainer',
+                showTopics: true,
+                onSelectionChange: (selection) => {
+                    // Update counts in headers
+                    document.getElementById('questionCollegeCount').textContent = selection.colleges.length;
+                    document.getElementById('questionDepartmentCount').textContent = selection.departments.length;
+                    document.getElementById('questionBatchCount').textContent = selection.batches.length;
+                    document.getElementById('questionTopicCount').textContent = selection.topics.length;
+                }
+            });
         } else {
             // For non-admins, strict hierarchy might not apply or is pre-filled, 
             // but for now let's show details directly as commonly desired
@@ -1141,14 +1150,22 @@ const Questions = {
     },
 
     proceedToQuestionDetails() {
-        const college = document.getElementById('questionCollege').value;
-        const dept = document.getElementById('questionDepartment').value;
-        const batch = document.getElementById('questionBatch').value;
-        const topic = document.getElementById('questionTopic').value;
+        const user = Auth.getCurrentUser();
 
-        if (!college || !dept || !batch || !topic) {
-            alert('Please select all hierarchy fields.');
-            return;
+        if (user.role === 'admin') {
+            // For admin, validate multi-select has at least one topic selected
+            const selectedTopics = MultiSelectHierarchy.selectedTopics;
+            if (!selectedTopics || selectedTopics.size === 0) {
+                alert('Please select at least one topic.');
+                return;
+            }
+        } else {
+            // For non-admins, use original single-select validation
+            const topic = document.getElementById('questionTopic')?.value;
+            if (!topic) {
+                alert('Please select a topic.');
+                return;
+            }
         }
 
         document.getElementById('questionHierarchyStep').style.display = 'none';
@@ -1161,7 +1178,7 @@ const Questions = {
     },
 
     /**
-     * Save question
+     * Save question (supports multi-select for admin)
      */
     async save() {
         try {
@@ -1187,6 +1204,13 @@ const Questions = {
             }
 
             const user = Auth.getCurrentUser();
+
+            // For admin creating new questions, use multi-select
+            if (user.role === 'admin' && !this.editingId) {
+                await this.saveMultipleQuestions(title, description, sampleInput, sampleOutput, difficulty);
+                return;
+            }
+
             const payload = {
                 title,
                 description,
@@ -1197,27 +1221,23 @@ const Questions = {
 
             let url = '/admin/questions';
             if (user.role === 'admin') {
-                const collegeId = document.getElementById('questionCollege').value.trim();
-                const departmentId = document.getElementById('questionDepartment').value.trim();
-                const batchId = document.getElementById('questionBatch').value.trim();
-                const topicId = document.getElementById('questionTopic').value.trim();
-
-                if (!collegeId || !departmentId || !batchId || !topicId) {
-                    Utils.showMessage('questionsMessage', 'Please select College, Department, Batch, and Topic', 'error');
-                    return;
+                // For editing, use stored topic info
+                if (this.editingId) {
+                    const question = this.questions.find(q => q.id === this.editingId);
+                    if (question) {
+                        payload.college_id = question.college_id;
+                        payload.department_id = question.department_id;
+                        payload.batch_id = question.batch_id;
+                        payload.topic_id = question.topic_id;
+                    }
                 }
-
-                payload.college_id = collegeId;
-                payload.department_id = departmentId;
-                payload.batch_id = batchId;
-                payload.topic_id = topicId;
             } else if (user.role === 'college') {
                 url = '/college/questions';
             } else if (user.role === 'department') {
                 url = '/department/questions';
             } else if (user.role === 'batch') {
                 url = '/batch/questions';
-                const topicId = document.getElementById('questionTopic').value.trim();
+                const topicId = document.getElementById('questionTopic')?.value?.trim();
                 if (topicId) {
                     payload.topic_id = topicId;
                 }
@@ -1240,6 +1260,69 @@ const Questions = {
                 'success');
         } catch (error) {
             Utils.showMessage('questionsMessage', 'Save failed: ' + error.message, 'error');
+        }
+    },
+
+    /**
+     * Save multiple questions (one for each selected topic)
+     */
+    async saveMultipleQuestions(title, description, sampleInput, sampleOutput, difficulty) {
+        const selectedTopics = MultiSelectHierarchy.getSelectedTopicsWithInfo();
+
+        if (selectedTopics.length === 0) {
+            Utils.showMessage('questionsMessage', 'Please select at least one topic', 'error');
+            return;
+        }
+
+        // Show loading
+        Utils.showMessage('questionsMessage', `Creating question in ${selectedTopics.length} topic(s)...`, 'info');
+
+        let successCount = 0;
+        let errorCount = 0;
+        const errors = [];
+
+        // Create question in each selected topic
+        for (const topic of selectedTopics) {
+            try {
+                const payload = {
+                    title,
+                    description,
+                    sample_input: sampleInput,
+                    sample_output: sampleOutput,
+                    difficulty,
+                    college_id: topic.collegeId,
+                    department_id: topic.departmentId,
+                    batch_id: topic.batchId,
+                    topic_id: topic.topicId
+                };
+
+                await Utils.apiRequest('/admin/questions', {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+
+                successCount++;
+            } catch (error) {
+                errorCount++;
+                errors.push(`${topic.topicName}: ${error.message || 'Failed'}`);
+            }
+        }
+
+        // Show result
+        if (errorCount === 0) {
+            Utils.showMessage('questionsMessage', `Successfully created question in ${successCount} topic(s)`, 'success');
+            setTimeout(() => {
+                UI.closeModal('questionModal');
+                this.loadQuestions();
+            }, 1500);
+        } else {
+            let msg = `Created in ${successCount} topic(s), failed in ${errorCount} topic(s).`;
+            if (errors.length > 0) {
+                msg += ' Errors: ' + errors.slice(0, 3).join(', ');
+                if (errors.length > 3) msg += '...';
+            }
+            Utils.showMessage('questionsMessage', msg, errorCount === selectedTopics.length ? 'error' : 'warning');
+            this.loadQuestions();
         }
     }
 };

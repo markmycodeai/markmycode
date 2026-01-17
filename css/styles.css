@@ -1460,3 +1460,222 @@ html[data-theme="light"] .icon-moon {
         display: none !important;
     }
 }
+
+/* ----------------------------------------------------
+   MULTI-SELECT HIERARCHY COMPONENT
+   ---------------------------------------------------- */
+
+/* Container for multi-select sections */
+.multi-select-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    max-height: 400px;
+}
+
+.multi-select-section {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.multi-select-section-header {
+    background: var(--bg-elevated);
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-main);
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.multi-select-section-header .count {
+    background: var(--primary-600);
+    color: var(--text-main);
+    font-size: 0.7rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-full);
+    margin-left: auto;
+}
+
+.multi-select-section-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem;
+    max-height: 250px;
+}
+
+/* List of checkboxes */
+.multi-select-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+/* Individual checkbox item */
+.multi-select-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.15s ease;
+    font-size: 0.875rem;
+    color: var(--text-body);
+}
+
+.multi-select-item:hover {
+    background: var(--bg-elevated);
+}
+
+.multi-select-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: var(--primary-500);
+}
+
+.multi-select-item .checkbox-label {
+    flex: 1;
+    user-select: none;
+}
+
+/* Select All styling */
+.multi-select-item.select-all {
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border-subtle);
+    border-radius: 0;
+    margin: -0.5rem -0.5rem 0.5rem -0.5rem;
+    padding: 0.75rem 1rem;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+/* Grouped multi-select (with headers) */
+.multi-select-grouped {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.multi-select-group {
+    background: var(--bg-app);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.multi-select-group-header {
+    background: var(--bg-elevated);
+    padding: 0.6rem 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.multi-select-group-header .group-icon {
+    font-size: 0.9rem;
+}
+
+.multi-select-group-header .group-title {
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--primary-500);
+}
+
+.multi-select-group-header .group-subtitle {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-left: auto;
+}
+
+.multi-select-group-items {
+    padding: 0.25rem;
+}
+
+.multi-select-group-items .multi-select-item {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+}
+
+/* Text muted helper */
+.text-muted {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-align: center;
+    padding: 1rem;
+}
+
+/* Selection summary badge */
+.selection-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-sm);
+    margin-top: 0.5rem;
+}
+
+.selection-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    background: var(--primary-600);
+    color: var(--text-main);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.selection-badge .remove-btn {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 0.25rem;
+    opacity: 0.7;
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.selection-badge .remove-btn:hover {
+    opacity: 1;
+}
+
+/* Wide modal for multi-select */
+.modal-content.modal-wide {
+    max-width: 900px;
+}
+
+.modal-content.modal-wide .modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+/* Responsive multi-select */
+@media (max-width: 900px) {
+    .multi-select-container {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .multi-select-container {
+        grid-template-columns: 1fr !important;
+    }
+
+    .modal-content.modal-wide {
+        max-width: 100%;
+    }
+}

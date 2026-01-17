@@ -27,14 +27,14 @@ FIRESTORE_PROJECT_ID = os.getenv("FIRESTORE_PROJECT_ID")
 # Groq Configuration
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 GROQ_API_KEY_FALLBACK = os.getenv("GROQ_API_KEY_FALLBACK")
-
+ 
 # CORS Configuration
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 
 # Auth Service (Backend B)
 # AUTH_SERVICE_URL = os.getenv("AUTH_SERVICE_URL", "http://localhost:3002") # Default to local port 3002 if not set
 
-AUTH_SERVICE_URL = "https://codeprac2-1.onrender.com" # Always use deployed Backend B
+AUTH_SERVICE_URL = "https://markmycode-1.onrender.com" # Always use deployed Backend B
 SERVICE_SECRET = os.getenv("SERVICE_SECRET", "dev-secret")
 
 

@@ -735,9 +735,9 @@
 
     <!-- Modals -->
 
-    <!-- Question Modal for Admin -->
+    <!-- Question Modal for Admin (Multi-Select) -->
     <div id="questionModal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content modal-wide">
             <div class="modal-header">
                 <h3>Add Question</h3>
                 <button class="close-btn">&times;</button>
@@ -745,39 +745,62 @@
             <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
                 <input type="hidden" id="questionId" />
 
-                <!-- Step 1: Hierarchy Selection (Admin Only) -->
+                <!-- Step 1: Hierarchy Selection (Admin Only - Multi-Select) -->
                 <div id="questionHierarchyStep" style="display: none;">
-                    <h4 style="margin-bottom: 1rem; color: #333;">Select Hierarchy</h4>
+                    <h4 style="margin-bottom: 0.5rem; color: var(--text-main);">Select Topics for Question</h4>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">
+                        Select the topics where this question should be added. The question will be created in all
+                        selected topics.
+                    </p>
 
-                    <div class="form-group">
-                        <label>College: <span style="color: red;">*</span></label>
-                        <select id="questionCollege" required onchange="Questions.loadDepartments(this.value)">
-                            <option value="">-- Select College --</option>
-                        </select>
+                    <!-- Multi-Select Hierarchy with Topics -->
+                    <div class="multi-select-container" style="grid-template-columns: repeat(4, 1fr);">
+                        <!-- Colleges Section -->
+                        <div class="multi-select-section">
+                            <div class="multi-select-section-header">
+                                Colleges
+                                <span class="count" id="questionCollegeCount">0</span>
+                            </div>
+                            <div class="multi-select-section-body" id="questionCollegesContainer">
+                                <p class="text-muted">Loading...</p>
+                            </div>
+                        </div>
+
+                        <!-- Departments Section -->
+                        <div class="multi-select-section">
+                            <div class="multi-select-section-header">
+                                Departments
+                                <span class="count" id="questionDepartmentCount">0</span>
+                            </div>
+                            <div class="multi-select-section-body" id="questionDepartmentsContainer">
+                                <p class="text-muted">Select colleges first</p>
+                            </div>
+                        </div>
+
+                        <!-- Batches Section -->
+                        <div class="multi-select-section">
+                            <div class="multi-select-section-header">
+                                Batches
+                                <span class="count" id="questionBatchCount">0</span>
+                            </div>
+                            <div class="multi-select-section-body" id="questionBatchesContainer">
+                                <p class="text-muted">Select departments first</p>
+                            </div>
+                        </div>
+
+                        <!-- Topics Section -->
+                        <div class="multi-select-section">
+                            <div class="multi-select-section-header">
+                                Topics
+                                <span class="count" id="questionTopicCount">0</span>
+                            </div>
+                            <div class="multi-select-section-body" id="questionTopicsContainer">
+                                <p class="text-muted">Select batches first</p>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Department: <span style="color: red;">*</span></label>
-                        <select id="questionDepartment" required onchange="Questions.loadBatches(this.value)">
-                            <option value="">-- Select Department --</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Batch: <span style="color: red;">*</span></label>
-                        <select id="questionBatch" required onchange="Questions.loadTopics(this.value)">
-                            <option value="">-- Select Batch --</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Topic: <span style="color: red;">*</span></label>
-                        <select id="questionTopic" required>
-                            <option value="">-- Select Topic --</option>
-                        </select>
-                    </div>
-
-                    <div style="border-top: 1px solid #ddd; padding-top: 1rem; margin-top: 1rem;">
+                    <div style="border-top: 1px solid var(--border-subtle); padding-top: 1rem; margin-top: 1rem;">
                         <button class="btn btn-primary" onclick="Questions.proceedToQuestionDetails()"
                             style="width: 100%;">Next: Add Question Details</button>
                     </div>
@@ -1470,9 +1493,9 @@ Jane Smith,jane@example.com,password456</pre>
         </div>
     </div>
 
-    <!-- Admin Topic Modal -->
+    <!-- Admin Topic Modal (Multi-Select) -->
     <div id="adminTopicModal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content modal-wide">
             <div class="modal-header">
                 <h3>Add Topic</h3>
                 <button class="close-btn">&times;</button>
@@ -1480,32 +1503,61 @@ Jane Smith,jane@example.com,password456</pre>
             <div class="modal-body">
                 <input type="hidden" id="adminTopicId" />
 
-                <div class="form-group">
-                    <label>College: <span style="color: red;">*</span></label>
-                    <select id="adminTopicCollege" required onchange="AdminTopics.loadDepartments(this.value)"></select>
-                </div>
-
-                <div class="form-group">
-                    <label>Department: <span style="color: red;">*</span></label>
-                    <select id="adminTopicDepartment" required onchange="AdminTopics.loadBatches(this.value)"></select>
-                </div>
-
-                <div class="form-group">
-                    <label>Batch: <span style="color: red;">*</span></label>
-                    <select id="adminTopicBatch" required></select>
-                </div>
-
-                <hr style="margin: 1rem 0;">
-
+                <!-- Topic Name First -->
                 <div class="form-group">
                     <label>Topic Name: <span style="color: red;">*</span></label>
                     <input type="text" id="adminTopicName" required placeholder="Topic name (min 2 chars)" />
                 </div>
-                <div id="adminTopicsMessage"></div>
+
+                <hr style="margin: 1rem 0;">
+
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">
+                    Select the batches where this topic should be created. The topic will be created in all selected
+                    batches.
+                </p>
+
+                <!-- Multi-Select Hierarchy -->
+                <div class="multi-select-container">
+                    <!-- Colleges Section -->
+                    <div class="multi-select-section">
+                        <div class="multi-select-section-header">
+                            Colleges
+                            <span class="count" id="adminTopicCollegeCount">0</span>
+                        </div>
+                        <div class="multi-select-section-body" id="adminTopicCollegesContainer">
+                            <p class="text-muted">Loading...</p>
+                        </div>
+                    </div>
+
+                    <!-- Departments Section -->
+                    <div class="multi-select-section">
+                        <div class="multi-select-section-header">
+                            Departments
+                            <span class="count" id="adminTopicDepartmentCount">0</span>
+                        </div>
+                        <div class="multi-select-section-body" id="adminTopicDepartmentsContainer">
+                            <p class="text-muted">Select colleges first</p>
+                        </div>
+                    </div>
+
+                    <!-- Batches Section -->
+                    <div class="multi-select-section">
+                        <div class="multi-select-section-header">
+                            Batches
+                            <span class="count" id="adminTopicBatchCount">0</span>
+                        </div>
+                        <div class="multi-select-section-body" id="adminTopicBatchesContainer">
+                            <p class="text-muted">Select departments first</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="adminTopicsMessage" style="margin-top: 1rem;"></div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="UI.closeModal('adminTopicModal')">Cancel</button>
-                <button class="btn btn-primary" type="submit" onclick="AdminTopics.save()">Create Topic</button>
+                <button class="btn btn-primary" type="submit" onclick="AdminTopics.saveMultiple()">Create
+                    Topic(s)</button>
             </div>
         </div>
     </div>
@@ -1539,9 +1591,9 @@ Jane Smith,jane@example.com,password456</pre>
         </div>
     </div>
 
-    <!-- Admin Note Modal -->
+    <!-- Admin Note Modal (Multi-Select) -->
     <div id="adminNoteModal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content modal-wide">
             <div class="modal-header">
                 <h3>Add Note</h3>
                 <button class="close-btn">&times;</button>
@@ -1549,23 +1601,7 @@ Jane Smith,jane@example.com,password456</pre>
             <div class="modal-body">
                 <input type="hidden" id="adminNoteId" />
 
-                <div class="form-group">
-                    <label>College: <span style="color: red;">*</span></label>
-                    <select id="adminNoteCollege" required onchange="AdminNotes.loadDepartments(this.value)"></select>
-                </div>
-
-                <div class="form-group">
-                    <label>Department: <span style="color: red;">*</span></label>
-                    <select id="adminNoteDepartment" required onchange="AdminNotes.loadBatches(this.value)"></select>
-                </div>
-
-                <div class="form-group">
-                    <label>Batch: <span style="color: red;">*</span></label>
-                    <select id="adminNoteBatch" required></select>
-                </div>
-
-                <hr style="margin: 1rem 0;">
-
+                <!-- Note Details First -->
                 <div class="form-group">
                     <label>Title: <span style="color: red;">*</span></label>
                     <input type="text" id="adminNoteTitle" required placeholder="Note title (min 2 chars)" />
@@ -1574,11 +1610,56 @@ Jane Smith,jane@example.com,password456</pre>
                     <label>Google Drive Link: <span style="color: red;">*</span></label>
                     <input type="url" id="adminNoteLink" required placeholder="https://drive.google.com/..." />
                 </div>
-                <div id="adminNotesMessage"></div>
+
+                <hr style="margin: 1rem 0;">
+
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">
+                    Select the batches where this note should be shared. The note will be available in all selected
+                    batches.
+                </p>
+
+                <!-- Multi-Select Hierarchy -->
+                <div class="multi-select-container">
+                    <!-- Colleges Section -->
+                    <div class="multi-select-section">
+                        <div class="multi-select-section-header">
+                            Colleges
+                            <span class="count" id="adminNoteCollegeCount">0</span>
+                        </div>
+                        <div class="multi-select-section-body" id="adminNoteCollegesContainer">
+                            <p class="text-muted">Loading...</p>
+                        </div>
+                    </div>
+
+                    <!-- Departments Section -->
+                    <div class="multi-select-section">
+                        <div class="multi-select-section-header">
+                            Departments
+                            <span class="count" id="adminNoteDepartmentCount">0</span>
+                        </div>
+                        <div class="multi-select-section-body" id="adminNoteDepartmentsContainer">
+                            <p class="text-muted">Select colleges first</p>
+                        </div>
+                    </div>
+
+                    <!-- Batches Section -->
+                    <div class="multi-select-section">
+                        <div class="multi-select-section-header">
+                            Batches
+                            <span class="count" id="adminNoteBatchCount">0</span>
+                        </div>
+                        <div class="multi-select-section-body" id="adminNoteBatchesContainer">
+                            <p class="text-muted">Select departments first</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="adminNotesMessage" style="margin-top: 1rem;"></div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="UI.closeModal('adminNoteModal')">Cancel</button>
-                <button class="btn btn-primary" type="submit" onclick="AdminNotes.save()">Create Note</button>
+                <button class="btn btn-primary" type="submit" onclick="AdminNotes.saveMultiple()">Create
+                    Note(s)</button>
             </div>
         </div>
     </div>
@@ -1605,6 +1686,7 @@ Jane Smith,jane@example.com,password456</pre>
     <script src="js/students.js"></script>
     <script src="js/student-profile.js"></script>
     <script src="js/admin.js"></script>
+    <script src="js/multi-select-hierarchy.js"></script>
     <script src="js/admin-topics.js"></script>
     <script src="js/admin-notes.js"></script>
     <script src="js/college.js"></script>

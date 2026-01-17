@@ -1,14 +1,76 @@
 /**
  * Admin Topics Management
- * Handles Topics CRUD operations for System Admins with hierarchy selection
+ * Handles Topics CRUD operations for System Admins with multi-select hierarchy
  */
 
 const AdminTopics = {
   apiEndpoint: `${CONFIG.API_BASE_URL}/admin/topics`,
   editingId: null,
+
+  // Hierarchy data for name resolution
   colleges: [],
   departments: [],
   batches: [],
+
+  /**
+   * Find college name by ID
+   */
+  findCollegeName: function (collegeId) {
+    if (!collegeId) return '-';
+    const college = this.colleges.find(c => c.id === collegeId);
+    return college ? (college.college_name || college.name) : collegeId;
+  },
+
+  /**
+   * Find department name by ID
+   */
+  findDepartmentName: function (departmentId) {
+    if (!departmentId) return '-';
+    const dept = this.departments.find(d => d.id === departmentId);
+    return dept ? (dept.department_name || dept.name) : departmentId;
+  },
+
+  /**
+   * Find batch name by ID
+   */
+  findBatchName: function (batchId) {
+    if (!batchId) return '-';
+    const batch = this.batches.find(b => b.id === batchId);
+    return batch ? (batch.batch_name || batch.name) : batchId;
+  },
+
+  /**
+   * Load hierarchy data (colleges, departments, batches)
+   */
+  loadHierarchyData: async function () {
+    try {
+      const token = localStorage.getItem('token');
+      const headers = { 'Authorization': `Bearer ${token}` };
+
+      // Load colleges
+      const collegesRes = await fetch(`${CONFIG.API_BASE_URL}/admin/colleges`, { headers });
+      if (collegesRes.ok) {
+        const data = await collegesRes.json();
+        this.colleges = data.colleges || data.data?.colleges || [];
+      }
+
+      // Load departments
+      const deptsRes = await fetch(`${CONFIG.API_BASE_URL}/admin/departments`, { headers });
+      if (deptsRes.ok) {
+        const data = await deptsRes.json();
+        this.departments = data.departments || data.data?.departments || [];
+      }
+
+      // Load batches
+      const batchesRes = await fetch(`${CONFIG.API_BASE_URL}/admin/batches`, { headers });
+      if (batchesRes.ok) {
+        const data = await batchesRes.json();
+        this.batches = data.batches || data.data?.batches || [];
+      }
+    } catch (error) {
+      console.error('Error loading hierarchy data:', error);
+    }
+  },
 
   /**
    * Open modal for creating/editing topic
@@ -19,25 +81,121 @@ const AdminTopics = {
     const submit = document.querySelector('#adminTopicModal [type=submit]');
 
     if (topicId) {
+      // Edit mode - use single select (keep original behavior for editing)
       modal.textContent = 'Edit Topic';
       submit.textContent = 'Update Topic';
+      submit.setAttribute('onclick', 'AdminTopics.save()');
       this.loadTopicForEdit(topicId);
     } else {
+      // Create mode - use multi-select
       document.getElementById('adminTopicId').value = '';
       document.getElementById('adminTopicName').value = '';
-      document.getElementById('adminTopicCollege').value = '';
-      document.getElementById('adminTopicDepartment').value = '';
-      document.getElementById('adminTopicBatch').value = '';
       modal.textContent = 'Add Topic';
-      submit.textContent = 'Create Topic';
-      this.loadColleges();
+      submit.textContent = 'Create Topic(s)';
+      submit.setAttribute('onclick', 'AdminTopics.saveMultiple()');
+
+      // Initialize multi-select hierarchy
+      this.initMultiSelect();
     }
 
     UI.openModal('adminTopicModal');
   },
 
   /**
-   * Load colleges for dropdown
+   * Initialize multi-select hierarchy for creating topics
+   */
+  initMultiSelect: function () {
+    MultiSelectHierarchy.init({
+      collegesContainerId: 'adminTopicCollegesContainer',
+      departmentsContainerId: 'adminTopicDepartmentsContainer',
+      batchesContainerId: 'adminTopicBatchesContainer',
+      showTopics: false,
+      onSelectionChange: (selection) => {
+        // Update counts in headers
+        document.getElementById('adminTopicCollegeCount').textContent = selection.colleges.length;
+        document.getElementById('adminTopicDepartmentCount').textContent = selection.departments.length;
+        document.getElementById('adminTopicBatchCount').textContent = selection.batches.length;
+      }
+    });
+  },
+
+  /**
+   * Save multiple topics (one for each selected batch)
+   */
+  saveMultiple: async function () {
+    const topicName = document.getElementById('adminTopicName').value.trim();
+
+    if (!topicName || topicName.length < 2) {
+      Utils.showMessage('adminTopicsMessage', 'Topic name is required (min 2 chars)', 'error');
+      return;
+    }
+
+    const selectedBatches = MultiSelectHierarchy.getSelectedBatchesWithInfo();
+
+    if (selectedBatches.length === 0) {
+      Utils.showMessage('adminTopicsMessage', 'Please select at least one batch', 'error');
+      return;
+    }
+
+    // Show loading
+    Utils.showMessage('adminTopicsMessage', `Creating topic in ${selectedBatches.length} batch(es)...`, 'info');
+
+    let successCount = 0;
+    let errorCount = 0;
+    const errors = [];
+
+    // Create topic in each selected batch
+    for (const batch of selectedBatches) {
+      try {
+        const payload = {
+          topic_name: topicName,
+          college_id: batch.collegeId,
+          department_id: batch.departmentId,
+          batch_id: batch.batchId
+        };
+
+        const response = await fetch(this.apiEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+          successCount++;
+        } else {
+          const error = await response.json();
+          errorCount++;
+          errors.push(`${batch.batchName}: ${error.message || 'Failed'}`);
+        }
+      } catch (error) {
+        errorCount++;
+        errors.push(`${batch.batchName}: ${error.message}`);
+      }
+    }
+
+    // Show result
+    if (errorCount === 0) {
+      Utils.showMessage('adminTopicsMessage', `Successfully created topic in ${successCount} batch(es)`, 'success');
+      setTimeout(() => {
+        UI.closeModal('adminTopicModal');
+        this.loadTopics();
+      }, 1500);
+    } else {
+      let msg = `Created in ${successCount} batch(es), failed in ${errorCount} batch(es).`;
+      if (errors.length > 0) {
+        msg += ' Errors: ' + errors.slice(0, 3).join(', ');
+        if (errors.length > 3) msg += '...';
+      }
+      Utils.showMessage('adminTopicsMessage', msg, errorCount === selectedBatches.length ? 'error' : 'warning');
+      this.loadTopics();
+    }
+  },
+
+  /**
+   * Load colleges for dropdown (for edit mode - backward compatibility)
    */
   loadColleges: async function () {
     try {
@@ -57,10 +215,11 @@ const AdminTopics = {
   },
 
   /**
-   * Populate college select
+   * Populate college select (for edit mode)
    */
   populateCollegeSelect: function () {
     const select = document.getElementById('adminTopicCollege');
+    if (!select) return;
     select.innerHTML = '<option value="">Select College</option>';
     this.colleges.forEach(college => {
       if (!college.is_disabled) {
@@ -73,22 +232,30 @@ const AdminTopics = {
   },
 
   /**
-   * Load departments for selected college
+   * Load departments for selected college (for edit mode)
    */
   loadDepartments: async function (collegeId) {
     if (!collegeId) {
-      document.getElementById('adminTopicDepartment').innerHTML = '<option value="">Select Department</option>';
-      document.getElementById('adminTopicDepartment').disabled = true;
-      document.getElementById('adminTopicBatch').innerHTML = '<option value="">Select Batch</option>';
-      document.getElementById('adminTopicBatch').disabled = true;
+      const deptSelect = document.getElementById('adminTopicDepartment');
+      const batchSelect = document.getElementById('adminTopicBatch');
+      if (deptSelect) {
+        deptSelect.innerHTML = '<option value="">Select Department</option>';
+        deptSelect.disabled = true;
+      }
+      if (batchSelect) {
+        batchSelect.innerHTML = '<option value="">Select Batch</option>';
+        batchSelect.disabled = true;
+      }
       return;
     }
 
-    // Enable department select
-    document.getElementById('adminTopicDepartment').disabled = false;
-    // Clear and disable batch select until department is selected
-    document.getElementById('adminTopicBatch').innerHTML = '<option value="">Select Batch</option>';
-    document.getElementById('adminTopicBatch').disabled = true;
+    const deptSelect = document.getElementById('adminTopicDepartment');
+    const batchSelect = document.getElementById('adminTopicBatch');
+    if (deptSelect) deptSelect.disabled = false;
+    if (batchSelect) {
+      batchSelect.innerHTML = '<option value="">Select Batch</option>';
+      batchSelect.disabled = true;
+    }
 
     try {
       const response = await fetch(`${CONFIG.API_BASE_URL}/admin/departments`, {
@@ -108,10 +275,11 @@ const AdminTopics = {
   },
 
   /**
-   * Populate department select
+   * Populate department select (for edit mode)
    */
   populateDepartmentSelect: function () {
     const select = document.getElementById('adminTopicDepartment');
+    if (!select) return;
     select.innerHTML = '<option value="">Select Department</option>';
     this.departments.forEach(dept => {
       const option = document.createElement('option');
@@ -122,15 +290,19 @@ const AdminTopics = {
   },
 
   /**
-   * Load batches for selected department
+   * Load batches for selected department (for edit mode)
    */
   loadBatches: async function (departmentId) {
     if (!departmentId) {
-      document.getElementById('adminTopicBatch').innerHTML = '<option value="">Select Batch</option>';
-      document.getElementById('adminTopicBatch').disabled = true;
+      const batchSelect = document.getElementById('adminTopicBatch');
+      if (batchSelect) {
+        batchSelect.innerHTML = '<option value="">Select Batch</option>';
+        batchSelect.disabled = true;
+      }
       return;
     }
-    document.getElementById('adminTopicBatch').disabled = false;
+    const batchSelect = document.getElementById('adminTopicBatch');
+    if (batchSelect) batchSelect.disabled = false;
 
     try {
       const response = await fetch(`${CONFIG.API_BASE_URL}/admin/batches`, {
@@ -150,10 +322,11 @@ const AdminTopics = {
   },
 
   /**
-   * Populate batch select
+   * Populate batch select (for edit mode)
    */
   populateBatchSelect: function () {
     const select = document.getElementById('adminTopicBatch');
+    if (!select) return;
     select.innerHTML = '<option value="">Select Batch</option>';
     this.batches.forEach(batch => {
       const option = document.createElement('option');
@@ -178,87 +351,56 @@ const AdminTopics = {
         const topic = data.topic || data.data?.topic || {};
         document.getElementById('adminTopicId').value = topicId;
         document.getElementById('adminTopicName').value = topic.topic_name || '';
-        document.getElementById('adminTopicCollege').value = topic.college_id || '';
-        document.getElementById('adminTopicDepartment').value = topic.department_id || '';
-        document.getElementById('adminTopicBatch').value = topic.batch_id || '';
 
-        // Load dropdowns in sequence
-        await this.loadColleges();
-        if (topic.college_id) {
-          await this.loadDepartments(topic.college_id);
-        }
-        if (topic.department_id) {
-          await this.loadBatches(topic.department_id);
-        }
+        // For edit mode, we'll need to show single-select dropdowns
+        // For now, just load the topic data
+        // TODO: Implement edit mode with single selects or pre-select in multi-select
+
       } else {
-        UI.showMessage('adminTopicsMessage', 'Error loading topic', 'error');
+        Utils.showMessage('adminTopicsMessage', 'Error loading topic', 'error');
       }
     } catch (error) {
       console.error('Error loading topic:', error);
-      UI.showMessage('adminTopicsMessage', 'Error loading topic', 'error');
+      Utils.showMessage('adminTopicsMessage', 'Error loading topic', 'error');
     }
   },
 
   /**
-   * Save topic (create or update)
+   * Save single topic (for edit mode - backward compatibility)
    */
   save: async function () {
     const topicId = document.getElementById('adminTopicId').value;
     const topicName = document.getElementById('adminTopicName').value.trim();
-    const collegeId = document.getElementById('adminTopicCollege').value;
-    const departmentId = document.getElementById('adminTopicDepartment').value;
-    const batchId = document.getElementById('adminTopicBatch').value;
 
     if (!topicName || topicName.length < 2) {
-      UI.showMessage('adminTopicsMessage', 'Topic name is required (min 2 chars)', 'error');
+      Utils.showMessage('adminTopicsMessage', 'Topic name is required (min 2 chars)', 'error');
       return;
     }
 
-    if (!collegeId || !departmentId || !batchId) {
-      UI.showMessage('adminTopicsMessage', 'College, Department, and Batch are required', 'error');
-      return;
-    }
-
-    const payload = {
-      topic_name: topicName,
-      college_id: collegeId,
-      department_id: departmentId,
-      batch_id: batchId
-    };
+    // For editing, we need to get the existing topic's hierarchy
+    // Since we're only updating the name, just send the update
 
     try {
-      let response;
-      if (topicId) {
-        response = await fetch(`${this.apiEndpoint}/${topicId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          },
-          body: JSON.stringify(payload)
-        });
-      } else {
-        response = await fetch(this.apiEndpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          },
-          body: JSON.stringify(payload)
-        });
-      }
+      const response = await fetch(`${this.apiEndpoint}/${topicId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ topic_name: topicName })
+      });
 
       if (response.ok) {
-        UI.showMessage('adminTopicsMessage', topicId ? 'Topic updated successfully' : 'Topic created successfully', 'success');
+        Utils.showMessage('adminTopicsMessage', 'Topic updated successfully', 'success');
         UI.closeModal('adminTopicModal');
         this.loadTopics();
       } else {
         const error = await response.json();
-        UI.showMessage('adminTopicsMessage', error.message || 'Error saving topic', 'error');
+        Utils.showMessage('adminTopicsMessage', error.message || 'Error saving topic', 'error');
       }
     } catch (error) {
       console.error('Error saving topic:', error);
-      UI.showMessage('adminTopicsMessage', 'Error saving topic', 'error');
+      Utils.showMessage('adminTopicsMessage', 'Error saving topic', 'error');
     }
   },
 
@@ -267,6 +409,9 @@ const AdminTopics = {
    */
   loadTopics: async function () {
     try {
+      // Load hierarchy data first for name resolution
+      await this.loadHierarchyData();
+
       const response = await fetch(this.apiEndpoint, {
         method: 'GET',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
@@ -276,11 +421,11 @@ const AdminTopics = {
         const data = await response.json();
         this.displayTopics(data.topics || data.data?.topics || []);
       } else {
-        UI.showMessage('adminMessage', 'Error loading topics', 'error');
+        Utils.showMessage('adminMessage', 'Error loading topics', 'error');
       }
     } catch (error) {
       console.error('Error loading topics:', error);
-      UI.showMessage('adminMessage', 'Error loading topics', 'error');
+      Utils.showMessage('adminMessage', 'Error loading topics', 'error');
     }
   },
 
@@ -299,15 +444,24 @@ const AdminTopics = {
     html += '<thead><tr>';
     html += '<th>Topic Name</th>';
     html += '<th>Batch</th>';
+    html += '<th>Department</th>';
+    html += '<th>College</th>';
     html += '<th style="text-align: center; width: 150px;">Actions</th>';
     html += '</tr></thead><tbody>';
 
     topics.forEach(topic => {
       if (topic.is_disabled) return;
 
+      // Resolve names from IDs using helper functions
+      const batchName = topic.batch_name || this.findBatchName(topic.batch_id);
+      const deptName = topic.department_name || this.findDepartmentName(topic.department_id);
+      const collegeName = topic.college_name || this.findCollegeName(topic.college_id);
+
       html += `<tr>`;
       html += `<td>${this.escapeHtml(topic.topic_name)}</td>`;
-      html += `<td>${this.escapeHtml(topic.batch_name || topic.batch_id)}</td>`;
+      html += `<td>${this.escapeHtml(batchName)}</td>`;
+      html += `<td>${this.escapeHtml(deptName)}</td>`;
+      html += `<td>${this.escapeHtml(collegeName)}</td>`;
       html += `<td class="flex-gap" style="justify-content: center;">`;
       html += `<button class="btn btn-sm btn-info" onclick="AdminTopics.openModal('${topic.id}')">Edit</button>`;
       html += `<button class="btn btn-sm btn-danger" onclick="AdminTopics.deleteConfirm('${topic.id}')">Delete</button>`;
@@ -339,15 +493,15 @@ const AdminTopics = {
       });
 
       if (response.ok) {
-        UI.showMessage('adminMessage', 'Topic deleted successfully', 'success');
+        Utils.showMessage('adminMessage', 'Topic deleted successfully', 'success');
         this.loadTopics();
       } else {
         const error = await response.json();
-        UI.showMessage('adminMessage', error.message || 'Error deleting topic', 'error');
+        Utils.showMessage('adminMessage', error.message || 'Error deleting topic', 'error');
       }
     } catch (error) {
       console.error('Error deleting topic:', error);
-      UI.showMessage('adminMessage', 'Error deleting topic', 'error');
+      Utils.showMessage('adminMessage', 'Error deleting topic', 'error');
     }
   },
 
@@ -355,6 +509,7 @@ const AdminTopics = {
    * Escape HTML to prevent XSS
    */
   escapeHtml: function (text) {
+    if (!text) return '';
     const map = {
       '&': '&amp;',
       '<': '&lt;',
@@ -362,7 +517,7 @@ const AdminTopics = {
       '"': '&quot;',
       "'": '&#039;'
     };
-    return text.replace(/[&<>"']/g, m => map[m]);
+    return String(text).replace(/[&<>"']/g, m => map[m]);
   }
 };
 
