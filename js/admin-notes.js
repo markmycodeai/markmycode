@@ -4,7 +4,7 @@
  */
 
 const AdminNotes = {
-  apiEndpoint: `${CONFIG.API_BASE_URL}/admin/notes`,
+  apiEndpoint: `${Config.API_BASE}/admin/notes`,
   editingId: null,
 
   // Hierarchy data for name resolution
@@ -48,21 +48,21 @@ const AdminNotes = {
       const headers = { 'Authorization': `Bearer ${token}` };
 
       // Load colleges
-      const collegesRes = await fetch(`${CONFIG.API_BASE_URL}/admin/colleges`, { headers });
+      const collegesRes = await fetch(`${Config.API_BASE}/admin/colleges`, { headers });
       if (collegesRes.ok) {
         const data = await collegesRes.json();
         this.colleges = data.colleges || data.data?.colleges || [];
       }
 
       // Load departments
-      const deptsRes = await fetch(`${CONFIG.API_BASE_URL}/admin/departments`, { headers });
+      const deptsRes = await fetch(`${Config.API_BASE}/admin/departments`, { headers });
       if (deptsRes.ok) {
         const data = await deptsRes.json();
         this.departments = data.departments || data.data?.departments || [];
       }
 
       // Load batches
-      const batchesRes = await fetch(`${CONFIG.API_BASE_URL}/admin/batches`, { headers });
+      const batchesRes = await fetch(`${Config.API_BASE}/admin/batches`, { headers });
       if (batchesRes.ok) {
         const data = await batchesRes.json();
         this.batches = data.batches || data.data?.batches || [];
@@ -207,7 +207,7 @@ const AdminNotes = {
    */
   loadColleges: async function () {
     try {
-      const response = await fetch(`${CONFIG.API_BASE_URL}/admin/colleges`, {
+      const response = await fetch(`${Config.API_BASE}/admin/colleges`, {
         method: 'GET',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -266,7 +266,7 @@ const AdminNotes = {
     }
 
     try {
-      const response = await fetch(`${CONFIG.API_BASE_URL}/admin/departments`, {
+      const response = await fetch(`${Config.API_BASE}/admin/departments`, {
         method: 'GET',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
@@ -313,7 +313,7 @@ const AdminNotes = {
     if (batchSelect) batchSelect.disabled = false;
 
     try {
-      const response = await fetch(`${CONFIG.API_BASE_URL}/admin/batches`, {
+      const response = await fetch(`${Config.API_BASE}/admin/batches`, {
         method: 'GET',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });

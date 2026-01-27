@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Multi-Select Hierarchy Component
  * Provides a cascading multi-select for College > Department > Batch selection
  * Used by Admin when creating Topics, Questions, and Notes
@@ -66,31 +66,39 @@ const MultiSelectHierarchy = {
         try {
             const token = localStorage.getItem('token');
             const headers = { 'Authorization': `Bearer ${token}` };
+            const apiBase = Config.API_BASE;
+
+            console.log('MultiSelectHierarchy: Loading data from', apiBase);
 
             // Load colleges
-            const collegesRes = await fetch(`${CONFIG.API_BASE_URL}/admin/colleges`, { headers });
+            const collegesRes = await fetch(`${apiBase}/admin/colleges`, { headers });
+            console.log('MultiSelectHierarchy: Colleges response status', collegesRes.status);
             if (collegesRes.ok) {
                 const data = await collegesRes.json();
+                console.log('MultiSelectHierarchy: Colleges data', data);
                 this.allColleges = (data.colleges || data.data?.colleges || []).filter(c => !c.is_disabled);
+                console.log('MultiSelectHierarchy: Filtered colleges', this.allColleges.length);
             }
 
             // Load departments
-            const deptsRes = await fetch(`${CONFIG.API_BASE_URL}/admin/departments`, { headers });
+            const deptsRes = await fetch(`${apiBase}/admin/departments`, { headers });
             if (deptsRes.ok) {
                 const data = await deptsRes.json();
                 this.allDepartments = (data.departments || data.data?.departments || []).filter(d => !d.is_disabled);
+                console.log('MultiSelectHierarchy: Filtered departments', this.allDepartments.length);
             }
 
             // Load batches
-            const batchesRes = await fetch(`${CONFIG.API_BASE_URL}/admin/batches`, { headers });
+            const batchesRes = await fetch(`${apiBase}/admin/batches`, { headers });
             if (batchesRes.ok) {
                 const data = await batchesRes.json();
                 this.allBatches = (data.batches || data.data?.batches || []).filter(b => !b.is_disabled);
+                console.log('MultiSelectHierarchy: Filtered batches', this.allBatches.length);
             }
 
             // Load topics (if needed)
             if (this.showTopics) {
-                const topicsRes = await fetch(`${CONFIG.API_BASE_URL}/admin/topics`, { headers });
+                const topicsRes = await fetch(`${apiBase}/admin/topics`, { headers });
                 if (topicsRes.ok) {
                     const data = await topicsRes.json();
                     this.allTopics = (data.topics || data.data?.topics || []).filter(t => !t.is_disabled);
